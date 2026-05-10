@@ -1,0 +1,666 @@
+{
+    "meta": {
+        "version": "1.0.0",
+        "sector": "accommodation",
+        "templateId": "accommodation",
+        "locale": "it-IT",
+        "lastUpdated": "2026-04-28"
+    },
+    "business": {
+        "name": "Villa Serena",
+        "tagline": "Dove il Lusso Incontra la Natura",
+        "description": "Villa Serena è un'oasi di tranquillità immersa tra antichi uliveti con viste panoramiche sul Mediterraneo. Offriamo camere eleganti, una spa rigenerante e un ristorante gourmet per un'esperienza indimenticabile sulla Costa Amalfitana.",
+        "logo": "/content/sites/villa-serena/assets/logo.svg",
+        "favicon": "/content/sites/villa-serena/assets/favicon.ico"
+    },
+    "contact": {
+        "email": "prenotazioni@villaserena.it",
+        "phone": "+39 089 871 234",
+        "address": "Via delle Colline 42, 84010 Ravello, Italia",
+        "whatsapp": "+39 347 123 4567",
+        "hours": "Lun-Dom 8:00-20:00 | Reception 24/7",
+        "socialLinks": [
+            {
+                "platform": "Instagram",
+                "url": "https://instagram.com/villaserena"
+            },
+            {
+                "platform": "Facebook",
+                "url": "https://facebook.com/villaserena"
+            },
+            {
+                "platform": "Pinterest",
+                "url": "https://pinterest.com/villaserena"
+            }
+        ]
+    },
+    "sections": [
+        {
+            "id": "heroCinematicScroll",
+            "type": "heroCinematicScroll",
+            "visible": true,
+            "content": {
+                "title": "Villa Serena",
+                "subtitle": "Un rifugio esclusivo dove l'eleganza senza tempo incontra la bellezza naturale incontaminata",
+                "ctaPrimary": {
+                    "text": "Scopri le Camere",
+                    "link": "#rooms"
+                },
+                "framesPath": "/content/sites/villa-serena/assets/hero-frame-",
+                "fallbackImage": "/content/sites/villa-serena/assets/hero-fallback.jpg",
+                "totalFrames": 3
+            }
+        },
+        {
+            "id": "navigation",
+            "type": "navigation",
+            "visible": true,
+            "content": {
+                "siteName": "Villa Serena",
+                "linkLogo": "villa-serena",
+                "logo": null,
+                "links": [
+                    {
+                        "label": "Home",
+                        "href": "#hero"
+                    },
+                    {
+                        "label": "Chi Siamo",
+                        "href": "#about"
+                    },
+                    {
+                        "label": "Camere",
+                        "href": "#rooms"
+                    },
+                    {
+                        "label": "Spa",
+                        "href": "#spa"
+                    },
+                    {
+                        "label": "Esperienze",
+                        "href": "#experiences"
+                    },
+                    {
+                        "label": "Galleria",
+                        "href": "#gallery"
+                    },
+                    {
+                        "label": "Contatti",
+                        "href": "#contact"
+                    }
+                ],
+                "cta": {
+                    "text": "Prenota Ora",
+                    "href": "#cta",
+                    "variant": "primary"
+                }
+            }
+        },
+        {
+            "id": "about",
+            "type": "about",
+            "visible": true,
+            "content": {
+                "title": "Un Santuario di Serenità",
+                "subtitle": "La Nostra Storia",
+                "description": "Immersa tra antichi uliveti con viste panoramiche sul Mediterraneo, Villa Serena offre un'evasione senza pari dall'ordinario. Ogni dettaglio è stato curato con attenzione per creare momenti di pura tranquillità, dalle nostre terrazze baciate dal sole alle nostre intime cene a lume di candela.",
+                "image": "/content/sites/villa-serena/assets/about.jpg",
+                "features": [
+                    {
+                        "title": "Esperienze Curate",
+                        "description": "Itinerari personalizzati creati dal nostro team di concierge",
+                        "icon": "star"
+                    },
+                    {
+                        "title": "Dal Campo alla Tavola",
+                        "description": "Ingredienti locali dal nostro orto biologico",
+                        "icon": "leaf"
+                    },
+                    {
+                        "title": "Focus sul Benessere",
+                        "description": "Trattamenti olistici e programmi di mindfulness",
+                        "icon": "heart"
+                    }
+                ],
+                "imagePosition": "right",
+                "showFeatures": true
+            }
+        },
+        {
+            "id": "camere",
+            "type": "rooms",
+            "visible": true,
+            "content": {
+                "title": "Le Nostre Camere",
+                "subtitle": "Comfort e Stile",
+                "layout": "grid-3",
+                "showPrice": true,
+                "showAmenities": true,
+                "items": [
+                    {
+                        "id": "suite-giardino",
+                        "name": "Suite Giardino",
+                        "description": "Svegliati al canto degli uccelli nella nostra luminosa Suite Giardino, con terrazza privata circondata da profumato gelsomino e lavanda.",
+                        "image": "/content/sites/villa-serena/assets/rooms/garden-suite.jpg",
+                        "price": "Da €400/notte",
+                        "amenities": [
+                            "Letto King",
+                            "Terrazza Privata",
+                            "Vista Giardino",
+                            "Doccia a Pioggia"
+                        ],
+                        "capacity": "2 Ospiti",
+                        "link": "#prenota-suite-giardino"
+                    },
+                    {
+                        "id": "villa-vista-mare",
+                        "name": "Villa Vista Mare",
+                        "description": "La nostra villa esclusiva offre ampie viste sul Mediterraneo, una piscina a sfioro privata e uno spazio esterno progettato per aperitivi al tramonto.",
+                        "image": "/content/sites/villa-serena/assets/rooms/sea-view-villa.jpg",
+                        "price": "Da €750/notte",
+                        "amenities": [
+                            "Suite Padronale",
+                            "Piscina Privata",
+                            "Vista Oceano",
+                            "Cucina Completa"
+                        ],
+                        "capacity": "4 Ospiti",
+                        "link": "#prenota-villa-mare"
+                    },
+                    {
+                        "id": "cottage-uliveto",
+                        "name": "Cottage dell'Uliveto",
+                        "description": "Un cottage in pietra appartato immerso tra ulivi centenari, perfetto per chi cerca completa privacy e connessione con la natura.",
+                        "image": "/content/sites/villa-serena/assets/rooms/olive-grove.jpg",
+                        "price": "Da €550/notte",
+                        "amenities": [
+                            "Due Camere",
+                            "Camino a Legna",
+                            "Giardino Privato",
+                            "Doccia all'Aperto"
+                        ],
+                        "capacity": "4 Ospiti",
+                        "link": "#prenota-cottage"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "spa",
+            "type": "spa",
+            "visible": true,
+            "content": {
+                "title": "Il Santuario del Benessere",
+                "subtitle": "Rigenera & Rinnova",
+                "description": "La nostra spa si ispira alle antiche tradizioni curative mediterranee, utilizzando botaniche raccolte localmente e tecniche consolidate nel tempo per ristabilire l'equilibrio di corpo e mente.",
+                "image": "/content/sites/villa-serena/assets/spa.jpg",
+                "services": [
+                    {
+                        "name": "Massaggio all'Olio d'Oliva",
+                        "duration": "90 min",
+                        "price": "€160"
+                    },
+                    {
+                        "name": "Rituale Mediterraneo",
+                        "duration": "120 min",
+                        "price": "€220"
+                    },
+                    {
+                        "name": "Yoga all'Alba",
+                        "duration": "60 min",
+                        "price": "Incluso"
+                    }
+                ],
+                "bookingLink": "#prenota-spa"
+            }
+        },
+        {
+            "id": "esperienze",
+            "type": "experiences",
+            "visible": true,
+            "content": {
+                "title": "Esperienze Uniche",
+                "subtitle": "Vivi il Territorio",
+                "layout": "carousel",
+                "showDescriptions": true,
+                "items": [
+                    {
+                        "id": "degustazione-vini",
+                        "title": "Degustazione Vini Privata",
+                        "description": "Esplora i migliori vini della regione con il nostro sommelier esperto",
+                        "image": "/content/sites/villa-serena/assets/experiences/wine.jpg",
+                        "link": "#dettaglio-vini"
+                    },
+                    {
+                        "id": "corso-cucina",
+                        "title": "Cucina dal Campo alla Tavola",
+                        "description": "Impara ricette tradizionali usando ingredienti del nostro orto",
+                        "image": "/content/sites/villa-serena/assets/experiences/cooking.jpg",
+                        "link": "#dettaglio-cucina"
+                    },
+                    {
+                        "id": "vela",
+                        "title": "Vela Costiera",
+                        "description": "Scopri calette nascoste e spiagge incontaminate con yacht privato",
+                        "image": "/content/sites/villa-serena/assets/experiences/sailing.jpg",
+                        "link": "#dettaglio-vela"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "gallery",
+            "type": "gallery",
+            "visible": true,
+            "content": {
+                "title": "Galleria",
+                "subtitle": "I Nostri Momenti",
+                "layout": "masonry",
+                "showCategories": true,
+                "images": [
+                    {
+                        "src": "/content/sites/villa-serena/assets/gallery/1.jpg",
+                        "alt": "Esterno della villa al tramonto",
+                        "category": "Proprietà"
+                    },
+                    {
+                        "src": "/content/sites/villa-serena/assets/gallery/2.jpg",
+                        "alt": "Area lounge a bordo piscina",
+                        "category": "Proprietà"
+                    },
+                    {
+                        "src": "/content/sites/villa-serena/assets/gallery/3.jpg",
+                        "alt": "Esperienza gastronomica gourmet",
+                        "category": "Ristorazione"
+                    },
+                    {
+                        "src": "/content/sites/villa-serena/assets/gallery/4.jpg",
+                        "alt": "Sala trattamenti spa",
+                        "category": "Benessere"
+                    },
+                    {
+                        "src": "/content/sites/villa-serena/assets/gallery/5.jpg",
+                        "alt": "Interni camera da letto",
+                        "category": "Camere"
+                    },
+                    {
+                        "src": "/content/sites/villa-serena/assets/gallery/6.jpg",
+                        "alt": "Costa mediterranea",
+                        "category": "Location"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "testimonials",
+            "type": "testimonials",
+            "visible": true,
+            "content": {
+                "title": "Cosa Dicono di Noi",
+                "subtitle": "Recensioni Verificate",
+                "layout": "carousel",
+                "showRating": true,
+                "showLocation": true,
+                "items": [
+                    {
+                        "name": "Francesca Bianchi",
+                        "location": "Roma",
+                        "review": "Un sogno assoluto. L'attenzione ai dettagli, il calore del personale e le viste mozzafiato hanno reso questo il viaggio più memorabile della nostra vita.",
+                        "rating": 5,
+                        "image": null,
+                        "date": "2026-03"
+                    },
+                    {
+                        "name": "Luca e Maria Rossi",
+                        "location": "Milano",
+                        "review": "Siamo venuti per il nostro anniversario e abbiamo trovato il paradiso. Il corso di cucina privato e la cena al tramonto sono stati oltre ogni immaginazione.",
+                        "rating": 5,
+                        "image": null,
+                        "date": "2026-02"
+                    },
+                    {
+                        "name": "Giovanni Verdi",
+                        "location": "Firenze",
+                        "review": "Da italiano, sono esigente riguardo l'ospitalità. Villa Serena ha superato ogni aspettativa. Una vera perla sulla costa.",
+                        "rating": 5,
+                        "image": null,
+                        "date": "2026-01"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "location",
+            "type": "location",
+            "visible": true,
+            "content": {
+                "title": "Dove Siamo",
+                "subtitle": "Vieni a Trovarci",
+                "description": "Situata sulla costa baciata dal sole del Mediterraneo, Villa Serena è a soli 45 minuti dall'aeroporto internazionale di Napoli e a breve distanza da incantevoli borghi costieri come Positano, Amalfi e Ravello.",
+                "address": "Via delle Colline 42, 84010 Ravello, Italia",
+                "coordinates": {
+                    "lat": 40.6494,
+                    "lng": 14.6117
+                },
+                "mapEmbed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2978.123456789!2d14.6117!3d40.6494!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDM4JzU3LjgiTiAxNMKwMzYnNDIuMSJF!5e0!3m2!1sit!2sit!4v1234567890",
+                "directionsLink": "https://maps.google.com/?q=Via+delle+Colline+42,+84010+Ravello,+Italia",
+                "nearbyAttractions": [
+                    {
+                        "name": "Centro Storico di Ravello",
+                        "distance": "5 min a piedi"
+                    },
+                    {
+                        "name": "Villa Rufolo",
+                        "distance": "7 min a piedi"
+                    },
+                    {
+                        "name": "Spiaggia di Minori",
+                        "distance": "10 min in auto"
+                    },
+                    {
+                        "name": "Sentiero degli Dei",
+                        "distance": "15 min in auto"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "contact",
+            "type": "contact",
+            "visible": true,
+            "content": {
+                "title": "Contattaci",
+                "subtitle": "Siamo a Tua Disposizione",
+                "description": "Per richieste di prenotazione, informazioni speciali o semplicemente per salutarci, il nostro team è a tua disposizione. Rispondiamo entro 24 ore.",
+                "fields": [
+                    {
+                        "id": "name",
+                        "label": "Nome Completo",
+                        "type": "text",
+                        "required": true,
+                        "placeholder": "Il tuo nome"
+                    },
+                    {
+                        "id": "email",
+                        "label": "Email",
+                        "type": "email",
+                        "required": true,
+                        "placeholder": "tua@email.com"
+                    },
+                    {
+                        "id": "phone",
+                        "label": "Telefono",
+                        "type": "tel",
+                        "required": false,
+                        "placeholder": "+39 000 0000000"
+                    },
+                    {
+                        "id": "checkIn",
+                        "label": "Data Check-in",
+                        "type": "date",
+                        "required": true
+                    },
+                    {
+                        "id": "checkOut",
+                        "label": "Data Check-out",
+                        "type": "date",
+                        "required": true
+                    },
+                    {
+                        "id": "guests",
+                        "label": "Numero Ospiti",
+                        "type": "select",
+                        "required": true,
+                        "options": [
+                            {
+                                "label": "1 Ospite",
+                                "value": "1"
+                            },
+                            {
+                                "label": "2 Ospiti",
+                                "value": "2"
+                            },
+                            {
+                                "label": "3 Ospiti",
+                                "value": "3"
+                            },
+                            {
+                                "label": "4+ Ospiti",
+                                "value": "4+"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "message",
+                        "label": "Messaggio",
+                        "type": "textarea",
+                        "required": false,
+                        "placeholder": "Richieste speciali, preferenze, domande...",
+                        "rows": 4
+                    }
+                ],
+                "submitText": "Invia Richiesta",
+                "successMessage": "Grazie! Ti contatteremo entro 24 ore per confermare la tua richiesta.",
+                "contactInfo": {
+                    "email": "prenotazioni@villaserena.it",
+                    "phone": "+39 089 871 234",
+                    "address": "Via delle Colline 42, 84010 Ravello, Italia",
+                    "socialLinks": [
+                        {
+                            "platform": "Instagram",
+                            "url": "https://instagram.com/villaserena"
+                        },
+                        {
+                            "platform": "Facebook",
+                            "url": "https://facebook.com/villaserena"
+                        },
+                        {
+                            "platform": "Pinterest",
+                            "url": "https://pinterest.com/villaserena"
+                        }
+                    ]
+                },
+                "benefits": [
+                    "Miglior tariffa garantita prenotando direttamente",
+                    "Check-in anticipato e check-out posticipato (su disponibilità)",
+                    "Welcome drink di benvenuto incluso",
+                    "Cancellazione gratuita fino a 7 giorni prima dell'arrivo"
+                ]
+            }
+        },
+        {
+            "id": "footer",
+            "type": "footer",
+            "visible": true,
+            "content": {
+                "description": "Un rifugio boutique sulla costa mediterranea, che offre lusso senza tempo ed esperienze autentiche dal 1985.",
+                "quickLinks": [
+                    {
+                        "label": "Camere",
+                        "href": "#rooms"
+                    },
+                    {
+                        "label": "Spa",
+                        "href": "#spa"
+                    },
+                    {
+                        "label": "Esperienze",
+                        "href": "#experiences"
+                    },
+                    {
+                        "label": "Galleria",
+                        "href": "#gallery"
+                    },
+                    {
+                        "label": "Location",
+                        "href": "#location"
+                    }
+                ],
+                "legalLinks": [
+                    {
+                        "label": "Privacy Policy",
+                        "href": "/privacy"
+                    },
+                    {
+                        "label": "Cookie Policy",
+                        "href": "/cookie"
+                    },
+                    {
+                        "label": "Termini e Condizioni",
+                        "href": "/termini"
+                    },
+                    {
+                        "label": "Politica di Cancellazione",
+                        "href": "/cancellazione"
+                    }
+                ],
+                "socialLinks": [
+                    {
+                        "platform": "Instagram",
+                        "url": "https://instagram.com/villaserena"
+                    },
+                    {
+                        "platform": "Facebook",
+                        "url": "https://facebook.com/villaserena"
+                    },
+                    {
+                        "platform": "Pinterest",
+                        "url": "https://pinterest.com/villaserena"
+                    }
+                ],
+                "copyright": " Villa Serena. P.IVA 12345678901. Tutti i diritti riservati."
+            }
+        }
+    ],
+    "seo": {
+        "metaTitle": "Villa Serena | Luxury B&B Ravello | Costa Amalfitana",
+        "metaDescription": "Villa Serena: rifugio di lusso immerso tra uliveti con vista mare a Ravello. Camere eleganti, spa, ristorante gourmet. Prenota la tua fuga indimenticabile.",
+        "keywords": [
+            "luxury b&b ravello",
+            "villa costa amalfitana",
+            "hotel boutique ravello",
+            "spa ravello",
+            "vacanze lusso italia",
+            "matrimoni costa amalfitana"
+        ],
+        "openGraph": {
+            "image": null,
+            "type": "website",
+            "locale": "it_IT"
+        },
+        "twitter": {
+            "card": "summary_large_image",
+            "image": null
+        },
+        "schemaType": "Hotel",
+        "schema": {
+            "@context": "https://schema.org",
+            "@type": "Hotel",
+            "name": "Villa Serena",
+            "image": "/content/sites/villa-serena/assets/logo.svg",
+            "telephone": "+39 089 871 234",
+            "email": "prenotazioni@villaserena.it",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Via delle Colline 42",
+                "addressLocality": "Ravello",
+                "postalCode": "84010",
+                "addressRegion": "SA",
+                "addressCountry": "IT"
+            },
+            "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": 40.6494,
+                "longitude": 14.6117
+            },
+            "openingHoursSpecification": [
+                {
+                    "@type": "OpeningHoursSpecification",
+                    "dayOfWeek": [
+                        "Monday",
+                        "Tuesday",
+                        "Wednesday",
+                        "Thursday",
+                        "Friday",
+                        "Saturday",
+                        "Sunday"
+                    ],
+                    "opens": "00:00",
+                    "closes": "23:59"
+                }
+            ],
+            "priceRange": "€€€€",
+            "amenityFeature": [
+                {
+                    "@type": "LocationFeatureSpecification",
+                    "name": "Spa",
+                    "value": true
+                },
+                {
+                    "@type": "LocationFeatureSpecification",
+                    "name": "Ristorante Gourmet",
+                    "value": true
+                },
+                {
+                    "@type": "LocationFeatureSpecification",
+                    "name": "Piscina",
+                    "value": true
+                },
+                {
+                    "@type": "LocationFeatureSpecification",
+                    "name": "WiFi Gratuito",
+                    "value": true
+                },
+                {
+                    "@type": "LocationFeatureSpecification",
+                    "name": "Parcheggio Privato",
+                    "value": true
+                }
+            ]
+        }
+    },
+    "theme": {
+        "colors": {
+            "primary": "#0c3921",
+            "primaryForeground": "#FFFFFF",
+            "accent": "#C4A77D",
+            "accentForeground": "#1A1A1A",
+            "background": "#ede3d6",
+            "foreground": "#1A1A1A",
+            "muted": "#F0EDE8",
+            "mutedForeground": "#6B6B6B",
+            "border": "#E5E7EB"
+        },
+        "fonts": {
+            "heading": "Playfair Display, serif",
+            "body": "Inter, sans-serif",
+            "mono": "JetBrains Mono, monospace"
+        },
+        "layout": {
+            "containerWidth": "lg",
+            "borderRadius": "md",
+            "sectionPadding": "loose"
+        },
+        "components": {
+            "button": {
+                "variant": "solid",
+                "borderRadius": "md"
+            },
+            "card": {
+                "shadow": "md",
+                "border": false
+            }
+        }
+    },
+    "integrations": {
+        "ga4Id": "G-XXXXXXXXXX",
+        "gtmId": null,
+        "cookiebotId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "resendContactEmail": "prenotazioni@villaserena.it",
+        "domain": "https://www.villaserena.it",
+        "cloudflare": {
+            "turnstileSiteKey": "1x00000000000000000000AA",
+            "analyticsToken": null
+        }
+    }
+}

@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: var(--color-primary);
+  --color-primary-foreground: var(--color-primary-foreground);
+
+  --color-accent: var(--color-accent);
+  --color-accent-foreground: var(--color-accent-foreground);
+
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+
+  --color-muted: var(--color-muted);
+  --color-muted-foreground: var(--color-muted-foreground);
+
+  --color-border: var(--color-border);
+
+  --font-heading: var(--site-font-heading);
+  --font-body: var(--site-font-body);
+  --font-mono: var(--site-font-mono);
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+}
+
+.break-words {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Hyphenation for long words in paragraphs */
+.hyphens-auto {
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+}
+
+/* Prevent horizontal scroll on any element */
+.no-horizontal-overflow {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Ensure form inputs don't overflow */
+input,
+textarea,
+select {
+  max-width: 100%;
+  box-sizing: border-box;
+}

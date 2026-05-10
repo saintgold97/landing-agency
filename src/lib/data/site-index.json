@@ -1,0 +1,10 @@
+{
+  "villa-serena": {
+    "template": "accommodation",
+    "version": "1.0.0",
+    "domains": [
+      "villa-serena.tuodominio.it"
+    ],
+    "assetsPath": "/content/site/villa-serena/assets"
+  }
+}
