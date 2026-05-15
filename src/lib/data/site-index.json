@@ -5,7 +5,7 @@
     "domains": [
       "hotel-luxury.tuodominio.it"
     ],
-    "assetsPath": "public/content/sites/hotel-luxury/assets"
+    "assetsPath": "/content/sites/hotel-luxury/assets"
   },
   "villa-serena": {
     "template": "accommodation_facility",
@@ -13,6 +13,6 @@
     "domains": [
       "villa-serena.tuodominio.it"
     ],
-    "assetsPath": "public/content/sites/villa-serena/assets"
+    "assetsPath": "/content/sites/villa-serena/assets"
   }
 }
