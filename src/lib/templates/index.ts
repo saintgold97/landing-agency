@@ -1,48 +1,47 @@
+// /**
+//  * 📦 Template Registry
+//  * 
+//  * Questo file mappa gli ID dei settori ai loro file di configurazione.
+//  * Utilizza import dinamici (lazy loading) per non appesantire il bundle iniziale.
+//  */
+
+import type { TemplateConfig } from "@/types/template";
+import accommodationFacility from "./accommodation_facility";
+import accommodationFacilityCinematic from "./accommodation_facility_cinematic";
+// Futuri template: import restaurant from "./restaurant";
+
 /**
- * 📦 Template Registry
- * 
- * Questo file mappa gli ID dei settori ai loro file di configurazione.
- * Utilizza import dinamici (lazy loading) per non appesantire il bundle iniziale.
+ * Registry centrale di tutti i template disponibili
+ * Chiave: ID univoco del template (usato nel DB/config sito)
  */
+export const templateRegistry: Record<string, TemplateConfig> = {
+  "accommodation_facility": accommodationFacility,
+  "accommodation_facility_cinematic": accommodationFacilityCinematic,
+  // "restaurant": restaurant,
+  // "esthetic_center": estheticCenter,
+} as const;
 
-import { TemplateConfig } from '@/types/template';
+export type TemplateId = keyof typeof templateRegistry;
 
-// Mappa dei template con caricamento dinamico
-export const templates = {
-  //generic: () => import('./generic'),
-  accommodation: () => import('./accommodation_facility'),
-  //restaurant: () => import('./restaurants'),
-};
-
-export type TemplateId = keyof typeof templates;
 /**
- * Helper per ottenere un template in modo type-safe.
- * Lancia un errore chiaro se l'ID non è valido o il file non esiste.
+ * Helper per ottenere un template in modo type-safe
  */
-export async function getTemplate(id: TemplateId): Promise<TemplateConfig> {
-  const loader = templates[id];
-  
-  if (!loader) {
-    throw new Error(`Template non trovato: "${id}". ID validi: ${Object.keys(templates).join(', ')}`);
-  }
-
-  try {
-    const loadedModule = await loader();
-    return loadedModule.default;
-  } catch (error) {
-    console.error(`❌ Errore nel caricamento del template "${id}":`, error);
-    //TODO: Implementare un fallback più robusto, ad esempio un template di errore o un messaggio user-friendly
-    // Fallback al template generico in caso di errore critico
-    // if (id !== 'generic') {
-    //   console.warn('⚠️ Fallback al template generico');
-    //   const fallback = await templates['generic']();
-    //   return fallback.default;
-    // }
-    throw error;
-  }
+export function getTemplate(id: string): TemplateConfig | undefined {
+  return templateRegistry[id as TemplateId];
 }
 
 /**
- * Lista semplice di tutti gli ID disponibili (utile per loop o validazioni)
+ * Helper per validare se un template esiste
  */
-export const templateIds: TemplateId[] = Object.keys(templates) as TemplateId[];
+export function isValidTemplate(id: string): id is TemplateId {
+  return id in templateRegistry;
+}
+
+/**
+ * Helper per ottenere tutti i template di un settore
+ */
+export function getTemplatesBySector(sector: string): TemplateConfig[] {
+  return Object.values(templateRegistry).filter((t) =>
+    t.sectors.includes(sector)
+  );
+}

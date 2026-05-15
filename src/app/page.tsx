@@ -9,6 +9,13 @@ const sites = [
         color: "#C8A96A", // gold accent
         bg: "#0E0E0E",
     },
+    {
+        slug: "hotel-luxury",
+        name: "Hotel Luxury",
+        description: "Luxury resort & hospitality experience",
+        color: "#C8A96A", // gold accent
+        bg: "#0E0E0E",
+    },
 ];
 
 export default function HomePage() {
@@ -39,7 +46,7 @@ export default function HomePage() {
                         <Link
                             key={site.slug}
                             href={`/${site.slug}`}
-                            className="group relative w-full max-w-md"
+                            className="group relative w-full max-w-md mx-4"
                         >
                             <div
                                 className="rounded-2xl border transition-all duration-300 p-8 backdrop-blur-md"

@@ -2,10 +2,10 @@
 
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
-
 import "@/app/globals.css"
 
 import { getSiteData } from "@/lib/data/loader"
+import { SmoothScroll } from "@/components/ui/SmoothScroll"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,7 +44,9 @@ export default async function SiteLayout({
   const colors = config?.theme?.colors
   const fonts = config?.theme?.fonts
 
-  const cssVariables = {
+  const cssVariables: React.CSSProperties & {
+    [key: `--${string}`]: string | undefined
+  } = {
     "--color-primary": colors?.primary,
     "--color-primary-foreground":
       colors?.primaryForeground ?? "#FFFFFF",
@@ -78,14 +80,19 @@ export default async function SiteLayout({
 
     "--font-mono":
       fonts?.mono ?? "monospace",
-  } as React.CSSProperties
+  }
+
+  const fontClass = fonts?.heading
+    ? fonts.heading
+    : geistSans.className
 
   return (
     <main
-      className={`bg-background text-foreground font-body min-h-screen ${geistSans.variable} ${geistMono.variable}`}
+      className={`bg-background text-foreground font-body min-h-screen overflow-x-hidden ${fontClass} ${geistMono.variable}`}
       style={cssVariables}
     >
-        {children}
+      <SmoothScroll />
+      {children}
     </main>
   )
 }

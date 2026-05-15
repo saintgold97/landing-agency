@@ -1,8 +1,8 @@
 {
     "meta": {
         "version": "1.0.0",
-        "sector": "accommodation",
-        "templateId": "accommodation",
+        "sector": "",
+        "templateId": "accommodation_facility",
         "locale": "it-IT",
         "lastUpdated": "2026-04-28"
     },
@@ -47,7 +47,10 @@
                     "link": "#rooms"
                 },
                 "framesPath": "/content/sites/villa-serena/assets/hero-frame-",
-                "fallbackImage": "/content/sites/villa-serena/assets/hero-fallback.jpg",
+                "fallbackImage": {
+                    "src": "/content/sites/villa-serena/assets/hero-fallback.jpg",
+                    "alt": "Vista panoramica di Villa Serena al tramonto"
+                },
                 "totalFrames": 3
             }
         },
@@ -61,10 +64,6 @@
                 "logo": null,
                 "links": [
                     {
-                        "label": "Home",
-                        "href": "#hero"
-                    },
-                    {
                         "label": "Chi Siamo",
                         "href": "#about"
                     },
@@ -73,8 +72,8 @@
                         "href": "#rooms"
                     },
                     {
-                        "label": "Spa",
-                        "href": "#spa"
+                        "label": "Servizi",
+                        "href": "#services"
                     },
                     {
                         "label": "Esperienze",
@@ -104,7 +103,10 @@
                 "title": "Un Santuario di Serenità",
                 "subtitle": "La Nostra Storia",
                 "description": "Immersa tra antichi uliveti con viste panoramiche sul Mediterraneo, Villa Serena offre un'evasione senza pari dall'ordinario. Ogni dettaglio è stato curato con attenzione per creare momenti di pura tranquillità, dalle nostre terrazze baciate dal sole alle nostre intime cene a lume di candela.",
-                "image": "/content/sites/villa-serena/assets/about.jpg",
+                "image": {
+                    "src": "/content/sites/villa-serena/assets/about.jpg",
+                    "alt": "Vista aerea di Villa Serena con uliveti e mare sullo sfondo"
+                },
                 "features": [
                     {
                         "title": "Esperienze Curate",
@@ -134,14 +136,17 @@
                 "title": "Le Nostre Camere",
                 "subtitle": "Comfort e Stile",
                 "layout": "grid-3",
-                "showPrice": true,
+                "showPrices": true,
                 "showAmenities": true,
                 "items": [
                     {
                         "id": "suite-giardino",
                         "name": "Suite Giardino",
                         "description": "Svegliati al canto degli uccelli nella nostra luminosa Suite Giardino, con terrazza privata circondata da profumato gelsomino e lavanda.",
-                        "image": "/content/sites/villa-serena/assets/rooms/garden-suite.jpg",
+                        "image": {
+                            "src": "/content/sites/villa-serena/assets/rooms/garden-suite.jpg",
+                            "alt": "Interni eleganti della Suite Giardino con vista sul giardino"
+                        },
                         "price": "Da €400/notte",
                         "amenities": [
                             "Letto King",
@@ -156,7 +161,10 @@
                         "id": "villa-vista-mare",
                         "name": "Villa Vista Mare",
                         "description": "La nostra villa esclusiva offre ampie viste sul Mediterraneo, una piscina a sfioro privata e uno spazio esterno progettato per aperitivi al tramonto.",
-                        "image": "/content/sites/villa-serena/assets/rooms/sea-view-villa.jpg",
+                        "image": {
+                            "src": "/content/sites/villa-serena/assets/rooms/sea-view-villa.jpg",
+                            "alt": "Vista panoramica della Villa Vista Mare con piscina a sfioro e vista mare"
+                        },
                         "price": "Da €750/notte",
                         "amenities": [
                             "Suite Padronale",
@@ -171,7 +179,10 @@
                         "id": "cottage-uliveto",
                         "name": "Cottage dell'Uliveto",
                         "description": "Un cottage in pietra appartato immerso tra ulivi centenari, perfetto per chi cerca completa privacy e connessione con la natura.",
-                        "image": "/content/sites/villa-serena/assets/rooms/olive-grove.jpg",
+                        "image": {
+                            "src": "/content/sites/villa-serena/assets/rooms/olive-grove.jpg",
+                            "alt": "Esterno rustico del Cottage dell'Uliveto circondato da ulivi secolari"
+                        },
                         "price": "Da €550/notte",
                         "amenities": [
                             "Due Camere",
@@ -186,14 +197,17 @@
             }
         },
         {
-            "id": "spa",
-            "type": "spa",
+            "id": "services",
+            "type": "services",
             "visible": true,
             "content": {
                 "title": "Il Santuario del Benessere",
                 "subtitle": "Rigenera & Rinnova",
                 "description": "La nostra spa si ispira alle antiche tradizioni curative mediterranee, utilizzando botaniche raccolte localmente e tecniche consolidate nel tempo per ristabilire l'equilibrio di corpo e mente.",
-                "image": "/content/sites/villa-serena/assets/spa.jpg",
+                "image": {
+                    "src": "/content/sites/villa-serena/assets/spa.jpg",
+                    "alt": "Sala trattamenti spa con vista sul mare"
+                },
                 "services": [
                     {
                         "name": "Massaggio all'Olio d'Oliva",
@@ -228,21 +242,30 @@
                         "id": "degustazione-vini",
                         "title": "Degustazione Vini Privata",
                         "description": "Esplora i migliori vini della regione con il nostro sommelier esperto",
-                        "image": "/content/sites/villa-serena/assets/experiences/wine.jpg",
+                        "image": {
+                            "src": "/content/sites/villa-serena/assets/experiences/wine.jpg",
+                            "alt": "Sommelier che versa vino in un calice durante una degustazione privata"
+                        },
                         "link": "#dettaglio-vini"
                     },
                     {
                         "id": "corso-cucina",
                         "title": "Cucina dal Campo alla Tavola",
                         "description": "Impara ricette tradizionali usando ingredienti del nostro orto",
-                        "image": "/content/sites/villa-serena/assets/experiences/cooking.jpg",
+                        "image": {
+                            "src": "/content/sites/villa-serena/assets/experiences/cooking.jpg",
+                            "alt": "Chef che insegna a preparare un piatto tradizionale italiano durante un corso di cucina privata"
+                        },
                         "link": "#dettaglio-cucina"
                     },
                     {
                         "id": "vela",
                         "title": "Vela Costiera",
                         "description": "Scopri calette nascoste e spiagge incontaminate con yacht privato",
-                        "image": "/content/sites/villa-serena/assets/experiences/sailing.jpg",
+                        "image": {
+                            "src": "/content/sites/villa-serena/assets/experiences/sailing.jpg",
+                            "alt": "Yacht che naviga lungo la costa amalfitana con acque cristalline e scogliere sullo sfondo durante un'esperienza di vela privata"
+                        },
                         "link": "#dettaglio-vela"
                     }
                 ]
@@ -473,6 +496,7 @@
             "type": "footer",
             "visible": true,
             "content": {
+                "siteName": "Villa Serena",
                 "description": "Un rifugio boutique sulla costa mediterranea, che offre lusso senza tempo ed esperienze autentiche dal 1985.",
                 "quickLinks": [
                     {
@@ -528,6 +552,11 @@
                         "url": "https://pinterest.com/villaserena"
                     }
                 ],
+                "contact": {
+                    "email": "prenotazioni@villaserena.it",
+                    "phone": "+39 089 871 234",
+                    "address": "Via delle Colline 42, 84010 Ravello, Italia"
+                },
                 "copyright": " Villa Serena. P.IVA 12345678901. Tutti i diritti riservati."
             }
         }

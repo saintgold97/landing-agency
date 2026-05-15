@@ -23,7 +23,7 @@ export type TemplateConfig = {
     // Sezioni disponibili di default per questo template
     defaultSections: Array<{
         type: string;                // Tipo sezione: "hero", "about", "rooms", etc.
-        visible: boolean;            // Visibile di default?
+        visible?: boolean;            // Visibile di default?
         order: number;               // Ordine di rendering
     }>;
 

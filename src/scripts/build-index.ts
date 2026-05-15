@@ -16,6 +16,7 @@ const siteConfigSchema = z.object({
     }),
     business: z.object({ name: z.string() }),
     domains: z.array(z.string()).optional(),
+    assets: z.object({ path: z.string().optional() }).optional(),
 });
 
 type SiteIndex = Record<
@@ -71,7 +72,7 @@ async function buildIndex() {
                 template: config.meta.templateId,
                 version: config.meta.version,
                 domains: config.domains || [`${slug}.tuodominio.it`],
-                assetsPath: `/content/site/${slug}/assets`, // Allineato a "site" singolare
+            assetsPath: config.assets?.path || `public/content/sites/${slug}/assets`,
             };
             console.log(`✅ Indicizzato: ${slug}`);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
