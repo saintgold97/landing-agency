@@ -45,7 +45,11 @@ async function buildIndex() {
         console.log(`📁 Creata directory: ${OUTPUT_DIR}`);
     }
 
-    const slugs = fs.readdirSync(CONTENT_DIR);
+    const slugs = fs
+        .readdirSync(CONTENT_DIR)
+        .filter((file) =>
+            fs.statSync(path.join(CONTENT_DIR, file)).isDirectory()
+        );
     console.log(`🔍 Scansione: ${CONTENT_DIR}`);
     console.log(`📂 Cartelle trovate: ${slugs.length}`);
 
@@ -72,7 +76,7 @@ async function buildIndex() {
                 template: config.meta.templateId,
                 version: config.meta.version,
                 domains: config.domains || [`${slug}.tuodominio.it`],
-            assetsPath: config.assets?.path || `public/content/sites/${slug}/assets`,
+                assetsPath: config.assets?.path || `/content/sites/${slug}/assets`,
             };
             console.log(`✅ Indicizzato: ${slug}`);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
