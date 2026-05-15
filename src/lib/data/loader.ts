@@ -2,15 +2,10 @@
 import fs from 'fs';
 import path from 'path';
 import { z } from 'zod';
-import { templates, type TemplateId } from '../templates';
-import type {
-    Section,
-} from '@/components/sections';
-
-import {
-    isValidSectionType,
-} from '@/components/sections';
+import type { Section, SectionType } from '@/types/sections/index';
 import { TemplateConfig } from '@/types/template';
+import { ClientThemeConfig, ResolvedThemeConfig, resolveThemeConfig } from '@/types/theme';
+import { isValidTemplate, getTemplate } from '../templates';
 
 // ============================================================================
 // 📋 Schema Zod per config cliente (validazione input)
@@ -20,7 +15,7 @@ export const siteConfigSchema = z.object({
     meta: z.object({
         version: z.string(),
         sector: z.string(),
-        templateId: z.string(),  // Deve corrispondere a keyof typeof TemplateIds
+        templateId: z.string(),
         locale: z.string().default('it-IT'),
     }),
     business: z.object({
@@ -40,12 +35,13 @@ export const siteConfigSchema = z.object({
     sections: z.array(
         z.object({
             id: z.string(),
-            type: z.string(),  // Stringa generica: validazione runtime
+            type: z.string(),
             title: z.string().optional(),
             subtitle: z.string().optional(),
-            content: z.record(z.string(), z.unknown()),  // Permissivo per flessibilità
-            visible: z.boolean().default(true),
-        }).loose() // Permette campi extra, ma non rimuove quelli definiti
+            content: z.record(z.string(), z.unknown()),
+            visible: z.boolean().optional(),
+            order: z.number().optional(),
+        }).loose()
     ),
     seo: z.object({
         metaTitle: z.string(),
@@ -55,34 +51,29 @@ export const siteConfigSchema = z.object({
     }),
     theme: z
         .object({
-            // 🎨 Colors nidificati
             colors: z.object({
-                primary: z.string().default("#2563EB"),
-                primaryForeground: z.string().default("#FFFFFF"),
-                accent: z.string().default("#F59E0B"),
-                accentForeground: z.string().default("#1A1A1A"),
-                background: z.string().default("#FFFFFF"),
-                foreground: z.string().default("#111827"),
-                muted: z.string().default("#F3F4F6"),
-                mutedForeground: z.string().default("#6B7280"),
-                border: z.string().default("#E5E7EB"),
+                primary: z.string().optional(),
+                primaryForeground: z.string().optional(),
+                accent: z.string().optional(),
+                accentForeground: z.string().optional(),
+                background: z.string().optional(),
+                foreground: z.string().optional(),
+                muted: z.string().optional(),
+                mutedForeground: z.string().optional(),
+                border: z.string().optional(),
             }),
-
-            // 🔤 Fonts nidificati
             fonts: z.object({
-                heading: z.string().default("Inter, sans-serif"),
-                body: z.string().default("Inter, sans-serif"),
+                heading: z.string().optional(),
+                body: z.string().optional(),
                 mono: z.string().optional(),
             }),
-
-            // 📐 Layout opzionale
             layout: z.object({
                 containerWidth: z.enum(["sm", "md", "lg", "xl", "full"]).default("lg"),
                 borderRadius: z.enum(["none", "sm", "md", "lg", "full"]).default("md"),
                 sectionPadding: z.enum(["tight", "normal", "loose"]).default("normal"),
             }).optional(),
         })
-        .default({  // ✅ Default per l'intero oggetto theme
+        .default({
             colors: {
                 primary: "#2563EB",
                 primaryForeground: "#FFFFFF",
@@ -104,26 +95,14 @@ export const siteConfigSchema = z.object({
 
 type ParsedSiteConfig = z.infer<typeof siteConfigSchema>;
 
-export type SiteConfig =
-    Omit<ParsedSiteConfig, 'sections'> & {
-        sections: Section[];
-    };
-
-// ============================================================================
-// 🔄 Tipo unificato per il merge (evita conflitti TemplateConfig vs SiteConfig)
-// ============================================================================
+export type SiteConfig = Omit<ParsedSiteConfig, 'sections'> & {
+    sections: Section[];
+};
 
 export type MergedSiteData = SiteConfig & {
-    // Campi aggiuntivi da TemplateConfig che vogliamo esporre
-    templateVersion?: string;
-    defaultSections?: Array<{ type: string; visible: boolean; order: number }>;
-    integrations?: {
-        domain?: string;
-        analytics?: {
-            googleAnalyticsId?: string;
-            facebookPixelId?: string;
-        };
-    }
+    template: TemplateConfig;
+    templateId: string;
+    theme: ResolvedThemeConfig;
 };
 
 // ============================================================================
@@ -138,92 +117,60 @@ export async function getSiteData(slug: string): Promise<MergedSiteData | null> 
 
     const configPath = path.join(process.cwd(), 'src/content/sites', slug, 'config.json');
 
-
     if (!fs.existsSync(configPath)) {
-        console.error(`❌ Config not found: ${configPath}`)
-        return null
+        console.error(`❌ Config not found: ${configPath}`);
+        return null;
     }
-
 
     try {
         // 1. Leggi e valida config cliente
         const raw = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-        const config = siteConfigSchema.parse(raw)
+        const config = siteConfigSchema.parse(raw);
 
-        //DEBUG: Verifica che l'ID del template sia presente e corretto
-        // console.log('🔍 Debug template loading:', {
-        //     templateIdFromConfig: config.meta.templateId,
-        //     availableTemplates: Object.keys(templates),
-        //     loaderFunction: templates[config.meta.templateId as TemplateId],
-        // });
+        // 2. Verifica che il template esista nel registry
+        if (!isValidTemplate(config.meta.templateId)) {
+            console.error(`❌ Template "${config.meta.templateId}" non registrato`);
+            return null;
+        }
 
-        // const loader = templates[config.meta.templateId as TemplateId];
+        // 3. Carica il template config (sincrono, non async!)
+        const templateConfig = getTemplate(config.meta.templateId);
+        if (!templateConfig) {
+            console.error(`❌ Impossibile caricare template "${config.meta.templateId}"`);
+            return null;
+        }
 
-        // if (!loader) {
-        //     console.error('❌ No loader found for:', config.meta.templateId);
-        //     throw new Error(`Template "${config.meta.templateId}" not found. Available: ${Object.keys(templates).join(', ')}`);
-        // }
+        // 4. Merge theme: config cliente override template default
+        const resolvedTheme = resolveThemeConfig(
+            config.theme as ClientThemeConfig | undefined,  // ← assertion per allineare i tipi
+            templateConfig.theme                             // ← ThemeConfig con tutti i campi richiesti
+        );
 
-        const typedSections: Section[] = config.sections.map((section) => {
-            if (!isValidSectionType(section.type)) {
-                throw new Error(
-                    `Invalid section type "${section.type}" in site "${slug}"`
-                );
-            }
+        // 5. Tipizza le sezioni (warning invece di throw per flessibilità)
+        const typedSections = config.sections.map((clientSection) => {
+            // Trova il default dal template
+            const defaultSection = templateConfig.defaultSections.find(
+                (ds) => ds.type === clientSection.type
+            );
 
             return {
-                ...section,
-                type: section.type,
+                id: clientSection.id,
+                type: clientSection.type as SectionType,
+                title: clientSection.title,
+                subtitle: clientSection.subtitle,
+                content: clientSection.content as Record<string, unknown>,
+                visible: clientSection.visible ?? defaultSection?.visible ?? true,
+                order: clientSection.order ?? defaultSection?.order ?? 999,
             } as Section;
         });
 
-        // 2. Carica template: templates[...]() → Promise<{ default: TemplateConfig }>
-        const templateModule = await templates[config.meta.templateId as TemplateId]?.();
-        if (!templateModule) {
-            throw new Error(`Template "${config.meta.templateId}" not found for site "${slug}"`);
-        }
-
-        // ✅ FIX 1: Estrai l'export default dal modulo
-        const templateConfig: TemplateConfig = templateModule.default;
-
-        // ✅ FIX 2: Merge esplicito e type-safe (no spread generico)
+        // 6. Costruisci il config merged finale
         const merged: MergedSiteData = {
             ...config,
-
             sections: typedSections,
-
-            templateVersion: templateConfig.version,
-
-            defaultSections: templateConfig.defaultSections,
-
-            theme: {
-                // 🎨 Merge colors: config cliente override template
-                colors: {
-                    primary: config.theme?.colors?.primary ?? templateConfig.theme?.colors?.primary ?? "#2563EB",
-                    primaryForeground: config.theme?.colors?.primaryForeground ?? templateConfig.theme?.colors?.primaryForeground ?? "#FFFFFF",
-                    accent: config.theme?.colors?.accent ?? templateConfig.theme?.colors?.accent ?? "#F59E0B",
-                    accentForeground: config.theme?.colors?.accentForeground ?? templateConfig.theme?.colors?.accentForeground ?? "#1A1A1A",
-                    background: config.theme?.colors?.background ?? templateConfig.theme?.colors?.background ?? "#FFFFFF",
-                    foreground: config.theme?.colors?.foreground ?? templateConfig.theme?.colors?.foreground ?? "#111827",
-                    muted: config.theme?.colors?.muted ?? templateConfig.theme?.colors?.muted ?? "#F3F4F6",
-                    mutedForeground: config.theme?.colors?.mutedForeground ?? templateConfig.theme?.colors?.mutedForeground ?? "#6B7280",
-                    border: config.theme?.colors?.border ?? templateConfig.theme?.colors?.border ?? "#E5E7EB",
-                },
-
-                // 🔤 Merge fonts: config cliente override template
-                fonts: {
-                    heading: config.theme?.fonts?.heading ?? templateConfig.theme?.fonts?.heading ?? "Inter, sans-serif",
-                    body: config.theme?.fonts?.body ?? templateConfig.theme?.fonts?.body ?? "Inter, sans-serif",
-                    mono: config.theme?.fonts?.mono ?? templateConfig.theme?.fonts?.mono,
-                },
-
-                // 📐 Layout (se presente)
-                layout: {
-                    containerWidth: config.theme?.layout?.containerWidth ?? templateConfig.theme?.layout?.containerWidth ?? "lg",
-                    borderRadius: config.theme?.layout?.borderRadius ?? templateConfig.theme?.layout?.borderRadius ?? "md",
-                    sectionPadding: config.theme?.layout?.sectionPadding ?? templateConfig.theme?.layout?.sectionPadding ?? "normal",
-                },
-            }
+            template: templateConfig,
+            templateId: config.meta.templateId,
+            theme: resolvedTheme,
         };
 
         return merged;

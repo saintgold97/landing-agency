@@ -1,64 +1,45 @@
-// src/components/sections/index.ts
+/**
+ * ============================================================================
+ * 🧩 Central Section Registry - Multi-Template System
+ * ============================================================================
+ * 
+ * Questo file aggrega tutti i renderer dei template e fornisce
+ * un'interfaccia unificata per il rendering dinamico.
+ * 
+ * Per aggiungere un nuovo template:
+ * 1. Crea la cartella src/components/sections/[template_name]/
+ * 2. Crea il suo index.ts con registry e renderSection
+ * 3. Importa e registra qui sotto
+ * ============================================================================
+ */
 
 import type { ComponentType, JSX } from 'react';
+import type { ThemeConfig } from '@/types/theme';
 
-/**
- * ============================================================================
- * 📦 Components Imports
- * ============================================================================
- */
+// ============================================================================
+// 📦 Import Registri dai Template Esistenti
+// ============================================================================
 
-import { AboutSection } from './about-section';
-import { ContactSection } from './contact-section';
-import { CtaSection } from './cta-section';
-import { ExperiencesSection } from './experiences-section';
-import { FooterSection } from './footer-section';
-import { GallerySection } from './gallery-section';
-import { HeroCinematicScroll } from './hero-cinematic-scroll';
-import { LocationSection } from './location-section';
-import { Navigation } from './navigation';
-import { RoomsSection } from './rooms-section';
-import { SpaSection } from './spa-section';
-import { TestimonialsSection } from './testimonials-section';
-import { SectionType, SectionContentMap, Section } from '@/types/sections';
-import { ThemeConfig } from '@/types/theme';
+// Template: accommodation_facility (Classic)
+import {
+  sectionComponents as accommodationClassicComponents,
+  renderSection as renderAccommodationClassic,
+  isValidSectionType as isValidAccommodationClassic,
+} from './accommodation_facility';
 
-/**
- * ============================================================================
- * 📦 Barrel Exports
- * ============================================================================
- */
+// Template: accommodation_facility_cinematic (Cinematic)
+import {
+  sectionComponents as accommodationCinematicComponents,
+  renderSection as renderAccommodationCinematic,
+  isValidSectionType as isValidAccommodationCinematic,
+} from './accommodation_facility_cinematic';
 
-export { Navigation } from './navigation';
-export { HeroCinematicScroll } from './hero-cinematic-scroll';
-export { AboutSection } from './about-section';
-export { RoomsSection } from './rooms-section';
-export { SpaSection } from './spa-section';
-export { ExperiencesSection } from './experiences-section';
-export { GallerySection } from './gallery-section';
-export { TestimonialsSection } from './testimonials-section';
-export { LocationSection } from './location-section';
-export { CtaSection } from './cta-section';
-export { ContactSection } from './contact-section';
-export { FooterSection } from './footer-section';
+import { Section, SectionContentMap, SectionType } from '@/types/sections/index';
 
-/**
- * ============================================================================
- * 📦 Types Exports
- * ============================================================================
- */
+// ============================================================================
+// 🎨 Base Props Condivise (unificate)
+// ============================================================================
 
-export type {
-  Section,
-  SectionContentMap,
-  SectionType,
-} from '@/types/sections';
-
-/**
- * ============================================================================
- * 🎨 Base Props
- * ============================================================================
- */
 export interface BaseSectionProps {
   id?: string;
   title?: string;
@@ -66,93 +47,117 @@ export interface BaseSectionProps {
   theme?: Partial<ThemeConfig>;
 }
 
-/**
- * ============================================================================
- * 🧩 Generic Section Component
- * ============================================================================
- */
+// ============================================================================
+// 🧩 Tipi Generici per il Rendering
+// ============================================================================
 
 export type SectionComponent<K extends SectionType> =
-  ComponentType<
-    BaseSectionProps & {
-      content: SectionContentMap[K];
-    }
-  >;
+  ComponentType<BaseSectionProps & { content: SectionContentMap[K] }>;
 
-/**
- * ============================================================================
- * 🗂️ Section Registry
- * ============================================================================
- */
+  export type SectionRenderer = (
+    section: Section<SectionType>,
+    id: number,
+    props?: Omit<BaseSectionProps, 'content'>
+  ) => JSX.Element | null;
 
-export type SectionRegistry = {
-  [K in SectionType]: SectionComponent<K>;
+export type TemplateRendererConfig = {
+  render: SectionRenderer;
+  isValid: (type: string) => boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  components: Record<string, ComponentType<any>>;
 };
 
-/**
- * ============================================================================
- * 🗄️ Central Registry
- * ============================================================================
- */
+// ============================================================================
+// 🗄️ Registry Centrale dei Template
+// ============================================================================
 
-export const sectionComponents: SectionRegistry = {
-  navigation: Navigation,
+export const templateRenderers: Record<string, TemplateRendererConfig> = {
+  /**
+   * Template: Accommodation Facility — Classic
+   * Stile: Tradizionale, focus su prenotazione e informazioni
+   */
+  "accommodation_facility": {
+    render: renderAccommodationClassic,
+    isValid: isValidAccommodationClassic,
+    components: accommodationClassicComponents,
+  },
 
-  heroCinematicScroll: HeroCinematicScroll,
+  /**
+   * Template: Accommodation Facility — Cinematic
+   * Stile: Premium, animazioni GSAP, design immersivo
+   */
+  "accommodation_facility_cinematic": {
+    render: renderAccommodationCinematic,
+    isValid: isValidAccommodationCinematic,
+    components: accommodationCinematicComponents,
+  },
 
-  about: AboutSection,
-
-  rooms: RoomsSection,
-
-  spa: SpaSection,
-
-  experiences: ExperiencesSection,
-
-  gallery: GallerySection,
-
-  testimonials: TestimonialsSection,
-
-  location: LocationSection,
-
-  cta: CtaSection,
-
-  contact: ContactSection,
-
-  footer: FooterSection,
+  /**
+   * 🔄 TEMPLATE FUTURI (esempi):
+   * Scommenta e configura quando aggiungi nuovi template
+   */
+  // "restaurant_classic": {
+  //   render: renderRestaurant,
+  //   isValid: isValidRestaurant,
+  //   components: restaurantComponents,
+  // },
+  // "esthetic_center": {
+  //   render: renderEsthetic,
+  //   isValid: isValidEsthetic,
+  //   components: estheticComponents,
+  // },
 };
 
-/**
- * ============================================================================
- * 🛠️ Helpers
- * ============================================================================
- */
+// Tipo per gli ID dei template registrati
+export type RegisteredTemplateId = keyof typeof templateRenderers;
 
-export function isValidSectionType(
-  value: string
-): value is SectionType {
-  return value in sectionComponents;
+// ============================================================================
+// 🛠️ Helper Pubblici
+// ============================================================================
+
+export function getSectionRenderer(templateId: string): TemplateRendererConfig | undefined {
+  return templateRenderers[templateId];
 }
 
-/**
- * Renderizza una sezione con type-safety completa
- */
-export function renderSection<K extends SectionType>(
+export function isRegisteredTemplate(templateId: string): templateId is RegisteredTemplateId {
+  return templateId in templateRenderers;
+}
+
+export function getAvailableTemplates(): RegisteredTemplateId[] {
+  return Object.keys(templateRenderers) as RegisteredTemplateId[];
+}
+
+export function renderSectionByTemplate<K extends SectionType>(
+  templateId: string,
   section: Section<K>,
   id: number,
-  props?: Omit<BaseSectionProps, 'content'> & { theme?: Partial<ThemeConfig> } 
+  props?: Omit<BaseSectionProps, 'content'>
 ): JSX.Element | null {
-  if (!isValidSectionType(section.type)) {
-    console.warn(`⚠️ Sezione non registrata: ${section.type}`);
+  const renderer = getSectionRenderer(templateId);
+  
+  if (!renderer) {
+    console.error(`❌ Template "${templateId}" non registrato nel sistema.`);
     return null;
   }
+  
+  if (!renderer.isValid(section.type)) {
+    console.warn(`⚠️ Sezione "${section.type}" non supportata dal template "${templateId}"`);
+    return null;
+  }
+  
+  return renderer.render(section, id, props);
+}
 
-  const Component = sectionComponents[section.type as keyof typeof sectionComponents] as SectionComponent<K>;
+// ============================================================================
+// 📦 Re-export Tipi Centralizzati
+// ============================================================================
 
-  return (
-    <Component
-      key={id}
-      {...props}
-      content={section.content}
-    />
-  );
+export type { Section, SectionContentMap, SectionType, ThemeConfig };
+
+// ============================================================================
+// 🧪 Utility per Debug/Development
+// ============================================================================
+
+if (process.env.NODE_ENV === 'development') {
+  console.log(`🎨 Section Registry loaded: ${getAvailableTemplates().length} template(s) available`);
 }

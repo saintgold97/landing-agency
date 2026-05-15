@@ -1,36 +1,197 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Multi-Tenant Showcase Platform
 
-## Getting Started
+A scalable multi-tenant platform for generating modern showcase websites for local businesses.
 
-First, run the development server:
+The project is designed around:
+
+- reusable templates
+- dynamic sections
+- centralized configurations
+- modular architecture
+- scalable multi-site management
+
+---
+
+# Vision
+
+The goal is to transform traditional custom website development into a scalable infrastructure for creating high-quality showcase websites quickly and efficiently.
+
+The platform is built to support:
+
+- hotels & resorts
+- wineries
+- restaurants
+- beauty centers
+- professional studios
+- local businesses
+
+---
+
+# Tech Stack
+
+- Next.js
+- TypeScript
+- Tailwind CSS
+- Config-driven architecture
+- Dynamic Section Renderer
+
+Future integrations:
+
+- Supabase
+- Multi-tenant dashboard
+- CMS-like editing system
+
+---
+
+# Project Structure
+
+```txt
+/src
+  /app
+  /components
+  /config
+  /data
+  /lib
+  /scripts
+  /templates
+```
+
+Architecture principles:
+
+- reusable components
+- modular sections
+- centralized site configuration
+- scalable template system
+- dynamic rendering
+
+---
+
+# Available Scripts
+
+## Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Starts the local development server using Next.js.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Used for:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- local development
+- testing templates
+- building new sections
+- debugging
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Production Build
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run build
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Runs the template/site index generator before creating the production build.
 
-## Deploy on Vercel
+Flow:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Executes:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```bash
+   tsx src/scripts/build-index.ts
+   ```
+
+2. Generates dynamic indexes/configuration files
+3. Builds the Next.js application for production
+
+---
+
+## Start Production Server
+
+```bash
+npm run start
+```
+
+Starts the production server after the project has been built.
+
+---
+
+## Lint
+
+```bash
+npm run lint
+```
+
+Runs ESLint checks across the project to detect:
+
+- code issues
+- style inconsistencies
+- potential bugs
+
+---
+
+## Lint & Fix
+
+```bash
+npm run lint:fix
+```
+
+Automatically fixes linting issues where possible.
+
+---
+
+## Generate Dynamic Indexes
+
+```bash
+npm run index:generate
+```
+
+Executes:
+
+```bash
+tsx src/scripts/build-index.ts
+```
+
+Used to generate dynamic indexes and internal configuration mappings for:
+
+- templates
+- sections
+- sites
+- dynamic imports
+- centralized registries
+
+Useful when:
+
+- creating new templates
+- adding sections
+- updating registry-based architecture
+
+---
+
+# Roadmap
+
+## Phase 0
+
+Market validation and first client acquisition
+
+## Phase 1
+
+Dynamic rendering engine
+
+## Phase 2
+
+Centralized multi-tenant backend
+
+## Phase 3
+
+Self-service dashboard
+
+## Phase 4
+
+Full SaaS platform
+
+---
+
+# Goal
+
+Build a scalable ecosystem capable of generating high-quality digital experiences for local businesses through reusable infrastructure and modular architecture.
