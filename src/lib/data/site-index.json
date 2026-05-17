@@ -3,16 +3,20 @@
     "template": "accommodation_facility_cinematic",
     "version": "1.0.0",
     "domains": [
-      "hotel-luxury.tuodominio.it"
+      "hotelluxury.com",
+      "www.hotelluxury.com"
     ],
-    "assetsPath": "/content/sites/hotel-luxury/assets"
+    "assetsPath": "content/sites/hotel-luxury/assets",
+    "locale": "it-IT"
   },
   "villa-serena": {
     "template": "accommodation_facility",
     "version": "1.0.0",
     "domains": [
-      "villa-serena.tuodominio.it"
+      "villaserena.com",
+      "www.villaserena.com"
     ],
-    "assetsPath": "/content/sites/villa-serena/assets"
+    "assetsPath": "content/sites/villa-serena/assets",
+    "locale": "it-IT"
   }
 }
