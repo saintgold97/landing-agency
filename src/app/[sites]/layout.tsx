@@ -26,8 +26,8 @@ export async function generateMetadata({
   const config = await getSiteData(sites)
 
   return {
-    title: config?.seo?.metaTitle,
-    description: config?.seo.metaDescription
+    title: config?.seo?.title,
+    description: config?.seo.description
   }
 }
 

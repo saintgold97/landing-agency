@@ -20,10 +20,6 @@ const accommodationFacilityV2: TemplateConfig = {
             muted: "#F0EDE8",
             mutedForeground: "#6B6B6B",
             border: "#E5E7EB",
-            // Alias per coerenza con componenti cinematici
-            ink: "#1A1A1A",
-            bone: "#ede3d6",
-            champagne: "#C4A77D",
         },
         fonts: {
             heading: "Playfair Display, serif",

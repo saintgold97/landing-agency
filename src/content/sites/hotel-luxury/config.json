@@ -4,14 +4,21 @@
         "sector": "accommodation",
         "templateId": "accommodation_facility_cinematic",
         "locale": "it-IT",
-        "lastUpdated": "2026-04-28"
+        "lastUpdated": "2026-04-28",
+        "domains": [
+            "hotel-luxury"
+        ]
+    },
+    "identity": {
+        "slug": "hotel-luxury"
     },
     "business": {
         "name": "Hotel Luxury",
         "tagline": "Dove il Lusso Incontra la Natura",
         "description": "Hotel Luxury è un'oasi di tranquillità immersa tra antichi uliveti con viste panoramiche sul Mediterraneo.",
         "logo": "/content/sites/hotel-luxury/assets/logo.svg",
-        "favicon": "/content/sites/hotel-luxury/assets/favicon.ico"
+        "favicon": "/content/sites/hotel-luxury/assets/favicon.ico",
+        "locale": "it-IT"
     },
     "contact": {
         "email": "prenotazioni@hotelluxury.it",
@@ -34,6 +41,10 @@
             }
         ]
     },
+    "domains": [
+        "hotelluxury.com",
+        "www.hotelluxury.com"
+    ],
     "sections": [
         {
             "id": "navigation",
@@ -466,90 +477,20 @@
         }
     ],
     "seo": {
-        "metaTitle": "Hotel Luxury | Luxury B&B Ravello | Costa Amalfitana",
-        "metaDescription": "Hotel Luxury: rifugio di lusso immerso tra uliveti con vista mare a Ravello. Camere eleganti, spa, ristorante gourmet. Prenota la tua fuga indimenticabile.",
+        "title": "Hotel Luxury",
+        "description": "Hotel Luxury - Il tuo soggiorno di lusso",
         "keywords": [
-            "luxury b&b ravello",
-            "villa costa amalfitana",
-            "hotel boutique ravello",
-            "spa ravello",
-            "vacanze lusso italia",
-            "matrimoni costa amalfitana"
+            "luxury b&b",
+            "villa costa amalfitana"
         ],
         "openGraph": {
-            "image": null,
             "type": "website",
-            "locale": "it_IT"
+            "locale": "it_IT",
+            "images": []
         },
         "twitter": {
             "card": "summary_large_image",
-            "image": null
-        },
-        "schemaType": "Hotel",
-        "schema": {
-            "@context": "https://schema.org",
-            "@type": "Hotel",
-            "name": "Hotel Luxury",
-            "image": "/content/sites/hotel-luxury/assets/logo.svg",
-            "telephone": "+39 089 871 234",
-            "email": "prenotazioni@hotelluxury.it",
-            "address": {
-                "@type": "PostalAddress",
-                "streetAddress": "Via delle Colline 42",
-                "addressLocality": "Ravello",
-                "postalCode": "84010",
-                "addressRegion": "SA",
-                "addressCountry": "IT"
-            },
-            "geo": {
-                "@type": "GeoCoordinates",
-                "latitude": 40.6494,
-                "longitude": 14.6117
-            },
-            "openingHoursSpecification": [
-                {
-                    "@type": "OpeningHoursSpecification",
-                    "dayOfWeek": [
-                        "Monday",
-                        "Tuesday",
-                        "Wednesday",
-                        "Thursday",
-                        "Friday",
-                        "Saturday",
-                        "Sunday"
-                    ],
-                    "opens": "00:00",
-                    "closes": "23:59"
-                }
-            ],
-            "priceRange": "€€€€",
-            "amenityFeature": [
-                {
-                    "@type": "LocationFeatureSpecification",
-                    "name": "Spa",
-                    "value": true
-                },
-                {
-                    "@type": "LocationFeatureSpecification",
-                    "name": "Ristorante Gourmet",
-                    "value": true
-                },
-                {
-                    "@type": "LocationFeatureSpecification",
-                    "name": "Piscina",
-                    "value": true
-                },
-                {
-                    "@type": "LocationFeatureSpecification",
-                    "name": "WiFi Gratuito",
-                    "value": true
-                },
-                {
-                    "@type": "LocationFeatureSpecification",
-                    "name": "Parcheggio Privato",
-                    "value": true
-                }
-            ]
+            "images": []
         }
     },
     "theme": {
@@ -575,27 +516,6 @@
             "containerWidth": "lg",
             "borderRadius": "md",
             "sectionPadding": "loose"
-        },
-        "components": {
-            "button": {
-                "variant": "solid",
-                "borderRadius": "md"
-            },
-            "card": {
-                "shadow": "md",
-                "border": false
-            }
-        }
-    },
-    "integrations": {
-        "ga4Id": "G-XXXXXXXXXX",
-        "gtmId": null,
-        "cookiebotId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "resendContactEmail": "prenotazioni@hotelluxury.it",
-        "domain": "https://www.hotelluxury.it",
-        "cloudflare": {
-            "turnstileSiteKey": "1x00000000000000000000AA",
-            "analyticsToken": null
         }
     }
 }

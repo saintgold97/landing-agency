@@ -1,94 +1,235 @@
 #!/usr/bin/env tsx
-import fs from 'fs';
+/**
+ * 🏗️ Build Index - Multi-Site SaaS Engine (Production Ready)
+ */
+
+import fs from 'fs/promises';
+import { existsSync } from 'fs';
 import path from 'path';
-import { z } from 'zod';
+import { siteConfigSchema } from '@/types/site-config';
 
-// 🔍 PERCORSI ALLINEATI ALLA TUA STRUTTURA REALE
-const CONTENT_DIR = path.join(process.cwd(), 'src/content/sites');
-const OUTPUT_DIR = path.join(process.cwd(), 'src/lib/data');
-const OUTPUT_FILE = path.join(OUTPUT_DIR, 'site-index.json');
+// ============================================================================
+// ⚙️ CONFIG
+// ============================================================================
 
-const siteConfigSchema = z.object({
-    meta: z.object({
-        version: z.string(),
-        sector: z.string(),
-        templateId: z.string(),
-    }),
-    business: z.object({ name: z.string() }),
-    domains: z.array(z.string()).optional(),
-    assets: z.object({ path: z.string().optional() }).optional(),
-});
+const CONFIG = {
+    CONTENT_DIR:
+        process.env.CONTENT_DIR ||
+        path.join(process.cwd(), 'src/content/sites'),
 
-type SiteIndex = Record<
-    string,
-    {
-        template: string;
-        version: string;
-        domains: string[];
-        assetsPath: string;
+    OUTPUT_DIR:
+        process.env.OUTPUT_DIR ||
+        path.join(process.cwd(), 'src/lib/data'),
+
+    OUTPUT_FILE:
+        process.env.OUTPUT_FILE || 'site-index.json',
+
+    BACKUP_ENABLED: process.env.BACKUP_INDEX !== 'false',
+
+    SLUG_REGEX: /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+    DOMAIN_REGEX:
+        /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i,
+} as const;
+
+// ============================================================================
+// 📦 TYPES INDEX
+// ============================================================================
+
+type SiteIndexEntry = {
+    template: string;
+    version: string;
+    domains: string[];
+    assetsPath: string;
+    locale: string;
+};
+
+type SiteIndex = Record<string, SiteIndexEntry>;
+
+// ============================================================================
+// 🪵 LOGGER
+// ============================================================================
+
+const logger = {
+    info: (msg: string, meta?: unknown) =>
+        console.log(`[INFO] ${msg}`, meta ?? ''),
+    warn: (msg: string, meta?: unknown) =>
+        console.warn(`[WARN] ${msg}`, meta ?? ''),
+    error: (msg: string, meta?: unknown) =>
+        console.error(`[ERROR] ${msg}`, meta ?? ''),
+    success: (msg: string) => console.log(`✅ ${msg}`),
+};
+
+// ============================================================================
+// 🔐 VALIDATION
+// ============================================================================
+
+function validateSlug(slug: string): boolean {
+    return (
+        CONFIG.SLUG_REGEX.test(slug) &&
+        slug.length <= 50 &&
+        !slug.includes('..')
+    );
+}
+
+// ============================================================================
+// 🧾 ATOMIC WRITE
+// ============================================================================
+
+async function atomicWrite(filePath: string, content: string) {
+    const dir = path.dirname(filePath);
+    await fs.mkdir(dir, { recursive: true });
+
+    const tempPath = `${filePath}.tmp.${Date.now()}`;
+
+    if (CONFIG.BACKUP_ENABLED && existsSync(filePath)) {
+        const backupPath = `${filePath}.backup.${Date.now()}`;
+        await fs.copyFile(filePath, backupPath);
+        logger.info(`Backup creato: ${path.basename(backupPath)}`);
     }
->;
 
-async function buildIndex() {
+    await fs.writeFile(tempPath, content, 'utf-8');
+    await fs.rename(tempPath, filePath);
+}
+
+// ============================================================================
+// 🚀 BUILD INDEX
+// ============================================================================
+
+async function buildIndex(
+    { dryRun = false, verbose = false } = {}
+) {
     const index: SiteIndex = {};
+    const errors: Array<{ slug: string; error: string }> = [];
 
-    // 1️⃣ Verifica directory sorgente
-    if (!fs.existsSync(CONTENT_DIR)) {
-        console.error(`❌ Directory non trovata: ${CONTENT_DIR}`);
-        console.log('💡 Verifica che il percorso sia corretto nel tuo progetto.');
+    logger.info('🚀 Build index start', {
+        contentDir: CONFIG.CONTENT_DIR,
+        dryRun,
+    });
+
+    // 1️⃣ check directory
+    if (!existsSync(CONFIG.CONTENT_DIR)) {
+        logger.error(`Missing dir: ${CONFIG.CONTENT_DIR}`);
         process.exit(1);
     }
 
-    // 2️⃣ Crea directory di output se non esiste
-    if (!fs.existsSync(OUTPUT_DIR)) {
-        fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-        console.log(`📁 Creata directory: ${OUTPUT_DIR}`);
+    // 2️⃣ read folders (ASYNC SAFE)
+    const rawFiles = await fs.readdir(CONFIG.CONTENT_DIR);
+
+    const slugs = [];
+
+    for (const file of rawFiles) {
+        const fullPath = path.join(CONFIG.CONTENT_DIR, file);
+
+        try {
+            const stat = await fs.stat(fullPath);
+
+            if (stat.isDirectory() && validateSlug(file)) {
+                slugs.push(file);
+            }
+        } catch {
+            continue;
+        }
     }
 
-    const slugs = fs
-        .readdirSync(CONTENT_DIR)
-        .filter((file) =>
-            fs.statSync(path.join(CONTENT_DIR, file)).isDirectory()
-        );
-    console.log(`🔍 Scansione: ${CONTENT_DIR}`);
-    console.log(`📂 Cartelle trovate: ${slugs.length}`);
+    logger.info(`Found ${slugs.length} sites`);
 
     if (slugs.length === 0) {
-        console.warn('⚠️ Nessuna cartella cliente trovata.');
-        fs.writeFileSync(OUTPUT_FILE, JSON.stringify({}, null, 2));
+        logger.warn('No valid sites found');
+
+        if (!dryRun) {
+            await atomicWrite(
+                path.join(CONFIG.OUTPUT_DIR, CONFIG.OUTPUT_FILE),
+                JSON.stringify({}, null, 2)
+            );
+        }
+
         return;
     }
 
-    // 3️⃣ Scansione e validazione
+    // 3️⃣ process sites
     for (const slug of slugs) {
-        const configPath = path.join(CONTENT_DIR, slug, 'config.json');
-        
-        if (!fs.existsSync(configPath)) {
-            console.log(`⏭️  Salto "${slug}": manca config.json`);
+        const configPath = path.join(
+            CONFIG.CONTENT_DIR,
+            slug,
+            'config.json'
+        );
+
+        if (!existsSync(configPath)) {
+            logger.warn(`Skip ${slug}: missing config.json`);
             continue;
         }
 
         try {
-            const raw = fs.readFileSync(configPath, 'utf-8');
-            const config = siteConfigSchema.parse(JSON.parse(raw));
+            const raw = await fs.readFile(configPath, 'utf-8');
+
+            const json = JSON.parse(raw);
+
+            const config = siteConfigSchema.parse(json);
 
             index[slug] = {
                 template: config.meta.templateId,
                 version: config.meta.version,
-                domains: config.domains || [`${slug}.tuodominio.it`],
-                assetsPath: config.assets?.path || `/content/sites/${slug}/assets`,
+                domains: config.domains,
+                assetsPath: config.assets?.path
+                    ? config.assets.path.replace(/^\/+/, '')
+                    : `content/sites/${slug}/assets`,
+                locale: config.business.locale,
             };
-            console.log(`✅ Indicizzato: ${slug}`);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (error: any) {
-            console.warn(`⚠️ Errore validazione "${slug}":`, error.message || error);
+
+            if (verbose) logger.success(`Indexed: ${slug}`);
+        } catch (err) {
+            logger.warn(`❌ Invalid config for ${slug}`, err);
+            errors.push({ slug, error: String(err) });
+            continue;
         }
     }
 
-    // 4️⃣ Scrittura finale
-    fs.writeFileSync(OUTPUT_FILE, JSON.stringify(index, null, 2));
-    console.log(`\n🎉 Generato con successo: ${OUTPUT_FILE}`);
-    console.log(`📊 Totale siti nel registry: ${Object.keys(index).length}`);
+    // 4️⃣ write output
+    const outputPath = path.join(
+        CONFIG.OUTPUT_DIR,
+        CONFIG.OUTPUT_FILE
+    );
+
+    if (!dryRun) {
+        await fs.mkdir(CONFIG.OUTPUT_DIR, { recursive: true });
+
+        await fs.writeFile(
+            outputPath,
+            JSON.stringify(index, null, 2),
+            'utf-8'
+        );
+    }
+
+    logger.success(`Index generated: ${outputPath}`);
+    logger.info(
+        `Sites: ${Object.keys(index).length}, errors: ${errors.length}`
+    );
 }
 
-buildIndex();
+// ============================================================================
+// 🧭 CLI
+// ============================================================================
+
+function parseArgs() {
+    const args = process.argv.slice(2);
+
+    return {
+        dryRun: args.includes('--dry-run'),
+        verbose: args.includes('--verbose'),
+    };
+}
+
+// ============================================================================
+// 🚀 RUN
+// ============================================================================
+
+if (require.main === module) {
+    const flags = parseArgs();
+
+    buildIndex(flags).catch((err) => {
+        logger.error('Build failed', err);
+        process.exit(1);
+    });
+}
+
+export { buildIndex, siteConfigSchema };

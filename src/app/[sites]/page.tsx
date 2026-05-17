@@ -15,26 +15,37 @@ export async function generateMetadata({
   params: Promise<{ sites: string }>;
 }): Promise<Metadata> {
   const { sites } = await params;
+
   const config = await getSiteData(sites);
 
   if (!config) {
     return {
-      title: 'Sito non trovato',
-      description: 'La pagina richiesta non esiste.',
+      title: "Sito non trovato",
+      description: "La pagina richiesta non esiste",
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 
   return {
-    title: config.seo.metaTitle,
-    description: config.seo.metaDescription,
-    keywords: config.seo.keywords,
-    openGraph: {
-      title: config.seo.metaTitle,
-      description: config.seo.metaDescription,
-      type: 'website',
-      locale: config.meta.locale,
-      siteName: config.business.name,
+    title: {
+      default: config.seo.title,
+      template: `%s | ${config.business.name}`,
     },
+    description: config.seo.description,
+    keywords: config.seo.keywords,
+
+    robots: config.seo.robots,
+
+    metadataBase: config.seo.metadataBase
+      ? new URL(config.seo.metadataBase)
+      : undefined,
+
+    openGraph: config.seo.openGraph,
+
+    twitter: config.seo.twitter,
   };
 }
 
@@ -42,28 +53,29 @@ export async function generateMetadata({
 export default async function SitePage({
   params,
 }: {
-  params: Promise<{ sites: string }>;
+  params: { sites: string };
 }) {
-  const { sites } = await params;
+  const { sites } = params;
+
   const config = await getSiteData(sites);
 
-  if (!config) return notFound();
+  if (!config) notFound();
 
-  // ✅ Verifica che il template sia registrato
   if (!isRegisteredTemplate(config.templateId)) {
-    console.error(`❌ Template "${config.templateId}" non configurato`);
-    return notFound();
+    console.error(`Template non registrato: ${config.templateId}`);
+    notFound();
   }
 
-  const sortedSections = config.sections
-    .filter((s) => s.visible)  // 1. Filtra le visibili
-    .sort((a, b) => a.order - b.order); // 2. Ordina per order numerico
+  const sections = config.sections
+    .filter((s) => s.visible !== false)
+    .sort((a, b) => a.order - b.order);
 
   return (
     <>
-      <Loader business={config.business}/>
-      {sortedSections.map((section, index) => {
-        return renderSectionByTemplate(
+      <Loader business={config.business} />
+
+      {sections.map((section, index) =>
+        renderSectionByTemplate(
           config.templateId,
           section,
           index,
@@ -73,8 +85,8 @@ export default async function SitePage({
             subtitle: section.subtitle,
             theme: config.theme,
           }
-        );
-      })}
+        )
+      )}
     </>
   );
 }
