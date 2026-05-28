@@ -1,7 +1,7 @@
 // src/components/sections/accommodation_facility_cinematic/Gallery.tsx
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { AnimatePresence } from "framer-motion";
 import { SectionContentMap } from "@/types/sections";
@@ -57,38 +57,19 @@ export function Gallery({
   }, []);
 
   // ============================================================================
-  // ⌨️ Keyboard Navigation
+  // 🔄 Memoized Navigation Handlers
   // ============================================================================
+  const handleNext = useCallback(() => {
+    setOpenIndex((prev) => (prev !== null ? (prev + 1) % images.length : null));
+  }, [images.length]);
 
-  useEffect(() => {
-    if (openIndex === null) return;
+  const handlePrev = useCallback(() => {
+    setOpenIndex((prev) => (prev !== null ? (prev - 1 + images.length) % images.length : null));
+  }, [images.length]);
 
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setOpenIndex(null);
-      }
-
-      if (e.key === "ArrowRight") {
-        setOpenIndex((prev) =>
-          prev !== null ? (prev + 1) % images.length : null
-        );
-      }
-
-      if (e.key === "ArrowLeft") {
-        setOpenIndex((prev) =>
-          prev !== null
-            ? (prev - 1 + images.length) % images.length
-            : null
-        );
-      }
-    };
-
-    window.addEventListener("keydown", onKey);
-
-    return () => {
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [openIndex, images.length]);
+  const handleClose = useCallback(() => {
+    setOpenIndex(null);
+  }, []);
 
   // ============================================================================
   // ✨ Editorial Title Split
@@ -279,21 +260,9 @@ export function Gallery({
             images={images}
             currentIndex={openIndex}
             isOpen={true}
-            onClose={() => setOpenIndex(null)}
-            onNext={() =>
-              setOpenIndex((prev) =>
-                prev !== null
-                  ? (prev + 1) % images.length
-                  : null
-              )
-            }
-            onPrev={() =>
-              setOpenIndex((prev) =>
-                prev !== null
-                  ? (prev - 1 + images.length) % images.length
-                  : null
-              )
-            }
+            onClose={handleClose}
+            onNext={handleNext}
+            onPrev={handlePrev}
             isImageLoaded={true}
           />
         )}

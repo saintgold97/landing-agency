@@ -3,7 +3,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SectionContentMap } from "@/types/sections";
 
 interface GalleryLightboxProps {
@@ -28,11 +28,61 @@ export function GalleryLightbox({
     const current = images[currentIndex];
 
     // ============================================================================
-    // ♿ Focus trap per accessibilità
+    // 📱 Logica SWIPE integrata localmente
+    // ============================================================================
+    const [touchStartX, setTouchStartX] = useState<number | null>(null)
+    const [touchEndX, setTouchEndX] = useState<number | null>(null)
+    const minSwipeDistance = 50
+
+    const handleTouchStart = (e: React.TouchEvent) => {
+        setTouchEndX(null)
+        setTouchStartX(e.targetTouches[0].clientX)
+    }
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        setTouchEndX(e.targetTouches[0].clientX)
+    }
+
+    const handleTouchEnd = () => {
+        if (!touchStartX || !touchEndX) return
+        const distance = touchStartX - touchEndX
+
+        if (distance > minSwipeDistance) {
+            onNext()
+        } else if (distance < -minSwipeDistance) {
+            onPrev()
+        }
+    }
+
+    // ============================================================================
+    // ⌨️ Tastiera, Accessibilità & Blocco Totale dello Scroll (iOS + SmoothScroll)
     // ============================================================================
     useEffect(() => {
         if (!isOpen) return;
 
+        // 1. Tastiera (Escape, Frecce)
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") onClose()
+            if (e.key === "ArrowRight") onNext()
+            if (e.key === "ArrowLeft") onPrev()
+        }
+
+        // 2. Killer dello scroll per iOS e Smooth Scroll (Lenis/GSAP)
+        const preventDefaultTouch = (e: TouchEvent) => {
+            if ((e.target as HTMLElement).closest('[role="dialog"]')) return;
+            e.preventDefault();
+        };
+
+        window.addEventListener("keydown", handleKeyDown)
+        window.addEventListener("touchmove", preventDefaultTouch, { passive: false })
+
+        // Blocco classico ed enterprise
+        document.body.style.overflow = "hidden"
+        document.documentElement.style.overflow = "hidden"
+        document.documentElement.classList.add("lenis-stopped")
+        document.body.setAttribute("data-scroll-locked", "true")
+
+        // 3. Focus Trap per l'accessibilità (Tuo script ottimo)
         const focusableElements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
         const modal = document.querySelector('[role="dialog"]');
         const elements = modal?.querySelectorAll<HTMLElement>(focusableElements);
@@ -49,24 +99,21 @@ export function GalleryLightbox({
                 first?.focus();
             }
         };
-
         document.addEventListener("keydown", handleTab);
         first?.focus();
 
-        return () => document.removeEventListener("keydown", handleTab);
-    }, [isOpen]);
-
-    // ============================================================================
-    // 🖱️ Prevent body scroll when modal is open
-    // ============================================================================
-    useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = "hidden";
-        }
+        // Ripristino totale allo smontaggio del componente
         return () => {
-            document.body.style.overflow = "";
-        };
-    }, [isOpen]);
+            window.removeEventListener("keydown", handleKeyDown)
+            window.removeEventListener("touchmove", preventDefaultTouch)
+            document.removeEventListener("keydown", handleTab);
+
+            document.body.style.overflow = ""
+            document.documentElement.style.overflow = ""
+            document.documentElement.classList.remove("lenis-stopped")
+            document.body.removeAttribute("data-scroll-locked")
+        }
+    }, [isOpen, onClose, onNext, onPrev]);
 
     if (!current) return null;
 
@@ -79,8 +126,11 @@ export function GalleryLightbox({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[100] bg-ink/95 backdrop-blur-md flex items-center justify-center p-4 md:p-6"
+            className="fixed inset-0 z-[200] bg-ink/95 backdrop-blur-md flex items-center justify-center p-4 md:p-6 select-none touch-pan-y"
             onClick={onClose}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
         >
             {/* Close button */}
             <button
@@ -125,22 +175,23 @@ export function GalleryLightbox({
             )}
 
             {/* Image container */}
-            <div className="relative max-h-[90vh] max-w-[95vw] md:max-w-[90vw]" onClick={(e) => e.stopPropagation()}>
+            <div className="relative max-h-[90vh] max-w-[95vw] md:max-w-[90vw] select-none touch-pan-y" onClick={(e) => e.stopPropagation()}>
+
                 {/* Loading state */}
                 {!isImageLoaded && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-ink/50">
+                    <div className="absolute inset-0 flex items-center justify-center bg-ink/50 z-10">
                         <div className="w-8 h-8 border-2 border-champagne/30 border-t-champagne rounded-full animate-spin" aria-label="Loading image" />
                     </div>
                 )}
 
-                {/* Optimized Next.js Image */}
-                <AnimatePresence mode="wait">
+                {/* Cambio modalità in AnimatePresence per cambi fluidi senza attese di blocco */}
+                <AnimatePresence mode="popLayout">
                     <motion.div
                         key={currentIndex}
-                        initial={{ scale: 0.98, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.98, opacity: 0 }}
-                        transition={{ duration: 0.4, ease: [0.7, 0, 0.2, 1] }}
+                        initial={{ opacity: 0, x: 20 }} // Un leggero offset sull'asse X rende l'effetto swipe memorabile
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
                         className="relative"
                     >
                         <Image
@@ -148,9 +199,8 @@ export function GalleryLightbox({
                             alt={current.alt}
                             width={1920}
                             height={1280}
-                            className="max-h-[85vh] max-w-[95vw] md:max-w-[90vw] object-contain"
+                            className="max-h-[85vh] max-w-[95vw] md:max-w-[90vw] object-contain pointer-events-none" // 🛑 CRUCIALE: impedisce al browser mobile di attivare il drag nativo dell'immagine
                             priority
-                            onLoad={() => { }}
                         />
                     </motion.div>
                 </AnimatePresence>

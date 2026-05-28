@@ -3,17 +3,19 @@
 import { useRef, useEffect, useState, useCallback } from "react"
 import Image from "next/image"
 import { SectionContentMap } from "@/types/sections/index"
+import { GalleryLightbox } from "@/components/ui/GalleryLightbox"
+import { AnimatePresence } from "framer-motion"
 
 interface GallerySectionProps {
-  content: SectionContentMap['gallery'] 
+  content: SectionContentMap['gallery']
 }
 
 export function GallerySection({ content }: GallerySectionProps) {
   const { images } = content
   const sectionRef = useRef<HTMLElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
+  const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -37,10 +39,6 @@ export function GallerySection({ content }: GallerySectionProps) {
     setLightboxOpen(true)
   }, [])
 
-  const closeLightbox = useCallback(() => {
-    setLightboxOpen(false)
-  }, [])
-
   const nextImage = useCallback(() => {
     setActiveIndex((prev) => (prev + 1) % images.length)
   }, [images.length])
@@ -48,25 +46,6 @@ export function GallerySection({ content }: GallerySectionProps) {
   const prevImage = useCallback(() => {
     setActiveIndex((prev) => (prev - 1 + images.length) % images.length)
   }, [images.length])
-
-  // Keyboard navigation
-  useEffect(() => {
-    if (!lightboxOpen) return
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeLightbox()
-      if (e.key === "ArrowRight") nextImage()
-      if (e.key === "ArrowLeft") prevImage()
-    }
-
-    window.addEventListener("keydown", handleKeyDown)
-    document.body.style.overflow = "hidden"
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown)
-      document.body.style.overflow = ""
-    }
-  }, [lightboxOpen, closeLightbox, nextImage, prevImage])
 
   return (
     <>
@@ -162,106 +141,20 @@ export function GallerySection({ content }: GallerySectionProps) {
       </section>
 
       {/* Lightbox */}
-      {lightboxOpen && (
-        <div
-          className="fixed inset-0 z-[200] bg-foreground/95 flex items-center justify-center"
-          onClick={closeLightbox}
-        >
-          {/* Close Button */}
-          <button
-            onClick={closeLightbox}
-            className="absolute top-6 right-6 w-12 h-12 flex items-center justify-center text-background hover:text-accent transition-colors cursor-pointer"
-            aria-label="Close lightbox"
-          >
-            <svg
-              className="w-8 h-8"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-
-          {/* Previous Button */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              prevImage()
-            }}
-            className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center text-background hover:text-accent transition-colors cursor-pointer"
-            aria-label="Previous image"
-          >
-            <svg
-              className="w-8 h-8"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          </button>
-
-          {/* Next Button */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              nextImage()
-            }}
-            className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center text-background hover:text-accent transition-colors cursor-pointer"
-            aria-label="Next image"
-          >
-            <svg
-              className="w-8 h-8"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </button>
-
-          {/* Image Container */}
-          <div
-            className="relative max-w-5xl max-h-[80vh] w-full h-full p-8 md:p-16"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="relative w-full h-full">
-              <Image
-                src={images[activeIndex].src}
-                alt={images[activeIndex].alt || `Lightbox image ${activeIndex + 1}`}
-                fill
-                className="object-contain"
-                sizes="90vw"
-                priority
-              />
-            </div>
-          </div>
-
-          {/* Caption */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center text-background">
-            <p className="text-sm">{images[activeIndex].alt}</p>
-            <p className="text-xs text-background/60 mt-1">
-              {activeIndex + 1} / {images.length}
-            </p>
-          </div>
-        </div>
-      )}
+      
+      <AnimatePresence>
+        {lightboxOpen && (
+          <GalleryLightbox
+            images={images}
+            currentIndex={activeIndex}
+            isOpen={lightboxOpen}
+            onClose={() => setLightboxOpen(false)}
+            onNext={nextImage}
+            onPrev={prevImage}
+            isImageLoaded={true}
+          />
+        )}
+      </AnimatePresence>
     </>
   )
 }
