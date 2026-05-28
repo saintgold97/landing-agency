@@ -7,7 +7,6 @@ import {
 } from '@/components/sections';
 import { Loader } from '@/components/ui/Loader';
 import siteIndex from '@/lib/data/site-index.json';
-import { desc } from 'framer-motion/client';
 
 export async function generateStaticParams() {
   return Object.keys(siteIndex).map((slug) => ({
