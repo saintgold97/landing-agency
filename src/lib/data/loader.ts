@@ -7,6 +7,7 @@ import { TemplateConfig } from '@/types/template';
 import { ResolvedThemeConfig, resolveThemeConfig } from '@/types/theme';
 import { isValidTemplate, getTemplate } from '../templates';
 import { siteConfigSchema } from '@/types/site-config';
+import { cache } from 'react';
 
 
 type ParsedSiteConfig = z.infer<typeof siteConfigSchema>;
@@ -25,7 +26,7 @@ export type MergedSiteData = SiteConfig & {
 // 📦 Funzione principale: carica e mergea config + template
 // ============================================================================
 
-export async function getSiteData(slug: string): Promise<MergedSiteData | null> {
+export const getSiteData = cache((slug: string): MergedSiteData | null => {
     if (!slug || typeof slug !== 'string') {
         console.error('❌ getSiteData: slug is invalid', { slug, type: typeof slug });
         return null;
@@ -95,4 +96,4 @@ export async function getSiteData(slug: string): Promise<MergedSiteData | null> 
         console.error(`❌ Error loading site "${slug}":`, error);
         return null;
     }
-}
+});

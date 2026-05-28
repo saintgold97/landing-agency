@@ -7,6 +7,7 @@ import fs from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
 import { siteConfigSchema } from '@/types/site-config';
+import { fileURLToPath } from 'url';
 
 // ============================================================================
 // ⚙️ CONFIG
@@ -223,7 +224,9 @@ function parseArgs() {
 // 🚀 RUN
 // ============================================================================
 
-if (require.main === module) {
+const isMain = process.argv[1] === fileURLToPath(import.meta.url);
+
+if (isMain) {
     const flags = parseArgs();
 
     buildIndex(flags).catch((err) => {

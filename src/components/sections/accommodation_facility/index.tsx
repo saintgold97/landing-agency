@@ -1,23 +1,24 @@
 import type { ComponentType, JSX } from 'react';
 import type { ThemeConfig } from '@/types/theme';
-
-// ============================================================================
-// 📦 Import Componenti Specifici del Template
-// ============================================================================
-
-import { AboutSection } from './about-section';
-import { ContactSection } from './contact-section';
-import { CtaSection } from './cta-section';
-import { ExperiencesSection } from './experiences-section';
-import { FooterSection } from './footer-section';
-import { GallerySection } from './gallery-section';
-import { HeroCinematicScrollV1 } from './hero-cinematic-scroll';
-import { LocationSection } from './location-section';
-import { Navigation } from './navigation';
-import { RoomsSection } from './rooms-section';
-import { ServicesSection } from './services-section';
-import { TestimonialsSection } from './testimonials-section';
 import { Section, SectionContentMap, SectionType } from '@/types/sections/index';
+import dynamic from 'next/dynamic';
+
+// ============================================================================
+// 📦 Import dei Componenti in Lazy Loading (Dynamic Imports)
+// ============================================================================
+
+const Navigation = dynamic(() => import('./navigation').then(m => m.Navigation), { ssr: true });
+const HeroCinematicScrollV1 = dynamic(() => import('./hero-cinematic-scroll').then(m => m.HeroCinematicScrollV1), { ssr: true });
+const AboutSection = dynamic(() => import('./about-section').then(m => m.AboutSection), { ssr: true });
+const RoomsSection = dynamic(() => import('./rooms-section').then(m => m.RoomsSection), { ssr: true });
+const ServicesSection = dynamic(() => import('./services-section').then(m => m.ServicesSection), { ssr: true });
+const ExperiencesSection = dynamic(() => import('./experiences-section').then(m => m.ExperiencesSection), { ssr: true });
+const GallerySection = dynamic(() => import('./gallery-section').then(m => m.GallerySection), { ssr: true });
+const TestimonialsSection = dynamic(() => import('./testimonials-section').then(m => m.TestimonialsSection), { ssr: true });
+const LocationSection = dynamic(() => import('./location-section').then(m => m.LocationSection), { ssr: true });
+const CtaSection = dynamic(() => import('./cta-section').then(m => m.CtaSection), { ssr: true });
+const FooterSection = dynamic(() => import('./footer-section').then(m => m.FooterSection), { ssr: true });
+const ContactSection = dynamic(() => import('./contact-section').then(m => m.ContactSection), { ssr: true });
 
 // ============================================================================
 // 🎨 Base Props (condivise con altri template)
@@ -54,7 +55,7 @@ export const sectionComponents = {
   cta: CtaSection,
   contact: ContactSection,
   footer: FooterSection,
-} as const;
+};
 
 export type SectionRegistry = typeof sectionComponents;
 

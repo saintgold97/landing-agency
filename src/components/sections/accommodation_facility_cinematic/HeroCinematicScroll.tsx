@@ -26,22 +26,106 @@ export function HeroCinematicScrollV2({ content: {
         scrollTrigger: {
           trigger: wrap.current,
           start: "top top",
-          end: "+=220%",
+          end: "+=200%",
           scrub: 1,
           pin: true,
           anticipatePin: 1,
         },
       });
 
-      tl.to(".hero-exterior", { scale: 1.45, ease: "none" }, 0)
-        .to(".hero-headline", { y: -80, opacity: 0, ease: "none" }, 0)
-        .to(".door-left", { scale: 1.1, xPercent: -110, ease: "power2.inOut" }, 0.35)
-        .to(".door-right", { scale: 1.1, xPercent: 110, ease: "power2.inOut" }, 0.35)
-        .to(".door-glow", { opacity: 1, scale: 1.4, ease: "power2.out" }, 0.35)
-        .fromTo(".hero-interior", { opacity: 0, scale: 1.1 }, { opacity: 1, scale: 1, ease: "power2.out" }, 0.55)
-        .to(".hero-interior", { scale: 1.25, ease: "none" }, 0.75)
-        .to(".hero-exterior-wrap", { opacity: 0, ease: "none" }, 0.7)
-        .fromTo(".hero-inside-copy", { opacity: 0, y: 30 }, { opacity: 1, y: 0, ease: "power2.out" }, 0.85);
+      // =========================================================================
+      // 🎬 1. Exterior zoom + headline exit
+      // =========================================================================
+
+      tl.to(".hero-exterior", {scale: 1.5,
+        ease: "none",
+      }, 0)
+
+        .to(".hero-headline", {
+          y: -120,
+          opacity: 0,
+          ease: "none",
+        }, 0.05)
+
+        // =========================================================================
+        // 🚪 2. Doors open (sync)
+        // =========================================================================
+
+        .to(".door-left", {
+          xPercent: -120,
+          ease: "power2.inOut",
+        }, 0.18)
+
+        .to(".door-right", {
+          xPercent: 120,
+          ease: "power2.inOut",
+        }, 0.18)
+
+        // =========================================================================
+        // ✨ 3. Light bloom moment
+        // =========================================================================
+
+        .to(".door-glow", {
+          opacity: 1,
+          scale: 1.3,
+          ease: "power2.out",
+        }, 0.25)
+
+        // =========================================================================
+        // 🌫️ 4. Exterior exit (camera transition)
+        // =========================================================================
+
+
+
+        // =========================================================================
+        // 🟦 5. Interior entrance (FOCUS PULL)
+        // =========================================================================
+
+        .fromTo(
+          ".hero-interior",
+          {
+            opacity: 0,
+            scale: 1.12,
+            y: 60,
+            filter: "blur(14px)",
+          },
+          {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            filter: "blur(0px)",
+            ease: "power2.out",
+          },
+          0.5
+        )
+
+        // =========================================================================
+        // 🎥 6. Interior parallax (subtle camera drift)
+        // =========================================================================
+
+        .to(".hero-interior", {
+          scale: 1.06,
+          ease: "none",
+        }, 0.65)
+
+        // =========================================================================
+        // 📝 7. Inside copy reveal
+        // =========================================================================
+
+        .fromTo(
+          ".hero-inside-copy",
+          {
+            opacity: 0,
+            y: 40,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            ease: "power2.out",
+          },
+          0.7
+        );
+
     }, wrap);
 
     return () => ctx.revert();
