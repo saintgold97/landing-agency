@@ -67,7 +67,7 @@ const domainsSchema = z.array(z.string()).default([]);
 // ============================================================================
 const assetsSchema = z.object({
     path: z.string().min(1),
-    cdn: z.string().url().optional(),
+    cdn: z.url().optional(),
 }).optional();
 
 // ============================================================================

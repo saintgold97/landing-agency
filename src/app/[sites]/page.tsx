@@ -1,31 +1,33 @@
 // src/app/[sites]/page.tsx
 import { notFound } from 'next/navigation';
-import type { Metadata } from 'next';
 import { getSiteData } from '@/lib/data/loader';
 import {
   renderSectionByTemplate,
   isRegisteredTemplate
 } from '@/components/sections';
 import { Loader } from '@/components/ui/Loader';
+import siteIndex from '@/lib/data/site-index.json';
+import { desc } from 'framer-motion/client';
 
-// === SEO Dinamica (Server Component) ===
+export async function generateStaticParams() {
+  return Object.keys(siteIndex).map((slug) => ({
+    sites: slug,
+  }));
+}
+
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ sites: string }>;
-}): Promise<Metadata> {
+  params: Promise<{ sites: string }>
+}) {
   const { sites } = await params;
-
-  const config = await getSiteData(sites);
+  const config = getSiteData(sites);
 
   if (!config) {
     return {
-      title: "Sito non trovato",
-      description: "La pagina richiesta non esiste",
-      robots: {
-        index: false,
-        follow: false,
-      },
+      title: 'Not found',
+      description: 'The requested site was not found.',
+      robots: { index: false, follow: false },
     };
   }
 
@@ -53,40 +55,45 @@ export async function generateMetadata({
 export default async function SitePage({
   params,
 }: {
-  params: { sites: string };
+  params: Promise<{ sites: string }>
 }) {
-  const { sites } = params;
+  const { sites } = await params;
 
-  const config = await getSiteData(sites);
+  const config = getSiteData(sites);
 
-  if (!config) notFound();
-
-  if (!isRegisteredTemplate(config.templateId)) {
-    console.error(`Template non registrato: ${config.templateId}`);
+  if (!config || !isRegisteredTemplate(config.templateId)) {
     notFound();
   }
 
   const sections = config.sections
-    .filter((s) => s.visible !== false)
-    .sort((a, b) => a.order - b.order);
+    .filter(s => s.visible !== false)
+    .sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
 
   return (
     <>
       <Loader business={config.business} />
 
-      {sections.map((section, index) =>
-        renderSectionByTemplate(
-          config.templateId,
-          section,
-          index,
-          {
-            id: section.id,
-            title: section.title,
-            subtitle: section.subtitle,
-            theme: config.theme,
-          }
-        )
-      )}
+      <div className="site-sections">
+        {sections.map((section, index) => (
+          <div
+            key={`${section.type}-${section.id ?? index}`}
+            data-section-type={section.type}
+            data-index={index}
+          >
+            {renderSectionByTemplate(
+              config.templateId,
+              section,
+              index,
+              {
+                id: section.id,
+                title: section.title,
+                subtitle: section.subtitle,
+                theme: config.theme,
+              }
+            )}
+          </div>
+        ))}
+      </div>
     </>
   );
 }

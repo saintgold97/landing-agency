@@ -1,27 +1,30 @@
-import Link from "next/link";
+// src/app/page.tsx
 
-// 🔧 Temporary site registry (replace with real dynamic source later)
-const sites = [
-    {
-        slug: "villa-serena",
-        name: "Villa Serena",
-        description: "Luxury resort & hospitality experience",
-        color: "#C8A96A", // gold accent
-        bg: "#0E0E0E",
-    },
-    {
-        slug: "hotel-luxury",
-        name: "Hotel Luxury",
-        description: "Luxury resort & hospitality experience",
-        color: "#C8A96A", // gold accent
-        bg: "#0E0E0E",
-    },
-];
+import Link from "next/link";
+import siteIndex from "@/lib/data/site-index.json";
+import { SiteIndexEntry } from "../../middleware";
+
+const sites = Object.entries(
+    siteIndex as Record<string, SiteIndexEntry>
+).map(([slug, site]) => ({
+    slug,
+    name: slug
+        .split("-")
+        .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+        .join(" "),
+
+    description: site.template.replaceAll("_", " "),
+
+    color: "#C8A96A",
+}));
 
 export default function HomePage() {
     return (
-        <main className="min-h-screen text-white relative overflow-hidden" style={{ backgroundColor: "#0B0B0B" }}>
-            {/* subtle background glow */}
+        <main
+            className="min-h-screen text-white relative overflow-hidden"
+            style={{ backgroundColor: "#0B0B0B" }}
+        >
+            {/* background glow */}
             <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#C8A96A]/10 blur-[120px] rounded-full" />
             </div>
@@ -29,35 +32,39 @@ export default function HomePage() {
             <div className="max-w-5xl mx-auto px-6 py-24 relative">
                 {/* Hero */}
                 <section className="text-center mb-20">
-                    <span className="text-xs uppercase tracking-[0.35em] text-white/50 mb-4">
+                    <span className="text-xs uppercase tracking-[0.35em] text-white/50 mb-4 block">
                         Digital Experience
                     </span>
+
                     <h1 className="text-4xl md:text-6xl font-serif tracking-tight mb-6">
-                    Siti vetrina moderni per attività locali
+                        Siti vetrina moderni per attività locali
                     </h1>
+
                     <p className="text-white/60 max-w-xl mx-auto text-sm md:text-base leading-relaxed">
-                        Un’esperienza digitale elegante e immersiva, progettata per valorizzare il brand e la sua identità visiva.
+                        Esperienze digitali immersive progettate per hotel,
+                        resort, hospitality e business locali.
                     </p>
                 </section>
 
-                {/* Grid */}
-                <section className="flex justify-center">
+                {/* Sites */}
+                <section className="grid md:grid-cols-2 gap-8">
                     {sites.map((site) => (
                         <Link
                             key={site.slug}
                             href={`/${site.slug}`}
-                            className="group relative w-full max-w-md mx-4"
+                            className="group relative"
                         >
                             <div
-                                className="rounded-2xl border transition-all duration-300 p-8 backdrop-blur-md"
+                                className="relative rounded-2xl border transition-all duration-300 p-8 backdrop-blur-md overflow-hidden"
                                 style={{
-                                    borderColor: "rgba(200, 169, 106, 0.25)",
-                                    backgroundColor: "rgba(255,255,255,0.03)",
+                                    borderColor: "rgba(200,169,106,0.25)",
+                                    backgroundColor:
+                                        "rgba(255,255,255,0.03)",
                                 }}
                             >
                                 {/* glow */}
                                 <div
-                                    className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                                     style={{
                                         background: `radial-gradient(circle at top left, ${site.color}22, transparent 60%)`,
                                     }}
@@ -65,7 +72,7 @@ export default function HomePage() {
 
                                 <div className="relative">
                                     <h2
-                                        className="text-2xl font-medium tracking-tight transition-colors"
+                                        className="text-2xl font-medium tracking-tight"
                                         style={{ color: site.color }}
                                     >
                                         {site.name}
@@ -76,11 +83,14 @@ export default function HomePage() {
                                     </p>
 
                                     <div
-                                        className="mt-8 flex items-center gap-2 text-xs uppercase tracking-widest transition-colors"
+                                        className="mt-8 flex items-center gap-2 text-xs uppercase tracking-widest"
                                         style={{ color: site.color }}
                                     >
                                         <span>Esplora</span>
-                                        <span className="transition-transform group-hover:translate-x-1">→</span>
+
+                                        <span className="transition-transform group-hover:translate-x-1">
+                                            →
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -90,7 +100,7 @@ export default function HomePage() {
 
                 {/* Footer */}
                 <footer className="text-center mt-24 text-xs text-white/40">
-                    Minimal digital identity system
+                    Multi-tenant landing platform
                 </footer>
             </div>
         </main>

@@ -1,22 +1,23 @@
 import type { ComponentType, JSX } from 'react';
 import type { Section, SectionType, SectionContentMap } from '@/types/sections/index';
 import type { ThemeConfig } from '@/types/theme';
+import dynamic from 'next/dynamic';
 
 // ============================================================================
-// 📦 Import Componenti Specifici del Template
+// 📦 Import dei Componenti in Lazy Loading (Dynamic Imports)
 // ============================================================================
 
-import { About } from './About';
-import { CtaClosing } from './CtaClosing';
-import { Experience } from './Experience';
-import { Footer } from './Footer';
-import { Gallery } from './Gallery';
-import { HeroCinematicScrollV2 } from './HeroCinematicScroll';
-import { Nav } from './Nav';
-import { Rooms } from './Rooms';
-import { Services } from './Services';
-import { Testimonials } from './Testimonials';
-import { Location } from './Location';
+const Nav = dynamic(() => import('./Nav').then(m => m.Nav), { ssr: true });
+const HeroCinematicScrollV2 = dynamic(() => import('./HeroCinematicScroll').then(m => m.HeroCinematicScrollV2), { ssr: true });
+const About = dynamic(() => import('./About').then(m => m.About), { ssr: true });
+const Rooms = dynamic(() => import('./Rooms').then(m => m.Rooms), { ssr: true });
+const Services = dynamic(() => import('./Services').then(m => m.Services), { ssr: true });
+const Experience = dynamic(() => import('./Experience').then(m => m.Experience), { ssr: true });
+const Gallery = dynamic(() => import('./Gallery').then(m => m.Gallery), { ssr: true });
+const Testimonials = dynamic(() => import('./Testimonials').then(m => m.Testimonials), { ssr: true });
+const Location = dynamic(() => import('./Location').then(m => m.Location), { ssr: true });
+const CtaClosing = dynamic(() => import('./CtaClosing').then(m => m.CtaClosing), { ssr: true });
+const Footer = dynamic(() => import('./Footer').then(m => m.Footer), { ssr: true });
 
 // ============================================================================
 // 🎨 Base Props (condivise con altri template)
@@ -52,7 +53,7 @@ export const sectionComponents = {
   location: Location,
   cta: CtaClosing,
   footer: Footer,
-} as const;
+};
 
 export type SectionRegistry = typeof sectionComponents;
 

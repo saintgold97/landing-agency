@@ -1,6 +1,5 @@
 // src/app/[site]/layout.tsx
 
-import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "@/app/globals.css"
 
@@ -17,29 +16,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 })
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ sites: string }>
-}): Promise<Metadata> {
-  const { sites } = await params
-  const config = await getSiteData(sites)
-
-  return {
-    title: config?.seo?.title,
-    description: config?.seo.description
-  }
-}
-
 export default async function SiteLayout({
   children,
   params,
 }: {
   children: React.ReactNode
-  params: Promise<{ sites: string }>
+  params: Promise<{ sites: string }>;
 }) {
-  const { sites } = await params
-  const config = await getSiteData(sites)
+  const { sites } = await params;
+  const config = getSiteData(sites);
 
   const colors = config?.theme?.colors
   const fonts = config?.theme?.fonts
