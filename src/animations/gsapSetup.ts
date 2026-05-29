@@ -16,8 +16,7 @@ export function registerCinemaAnimations(): void {
   
   // Config globali opzionali per ScrollTrigger
   ScrollTrigger.config({
-    limitCallbacks: true,        // Performance: limita callback non necessarie
-    syncInterval: 30,            // Sync con requestAnimationFrame
+    limitCallbacks: true
   });
   
   // Default easing per coerenza visiva
@@ -30,6 +29,18 @@ export function registerCinemaAnimations(): void {
   
   if (process.env.NODE_ENV === "development") {
     console.log("🎬 GSAP + ScrollTrigger registered");
+  }
+}
+
+/**
+ * 🧹 Utility per fare tabula rasa degli scroll trigger rimasti in memoria.
+ * Da invocare se necessario durante i grandi cambi di layout per evitare memory leak.
+ */
+export function killAllScrollTriggers(): void {
+  if (typeof window === "undefined") return;
+  ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+  if (process.env.NODE_ENV === "development") {
+    console.log("🧹 All active ScrollTriggers cleared");
   }
 }
 

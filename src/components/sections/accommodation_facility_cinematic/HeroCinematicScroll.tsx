@@ -22,12 +22,14 @@ export function HeroCinematicScrollV2({ content: {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
+      const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: wrap.current,
           start: "top top",
           end: "+=200%",
-          scrub: 1,
+          scrub: isMobile ? true : 0.8,
           pin: true,
           anticipatePin: 1,
         },
@@ -37,12 +39,13 @@ export function HeroCinematicScrollV2({ content: {
       // 🎬 1. Exterior zoom + headline exit
       // =========================================================================
 
-      tl.to(".hero-exterior", {scale: 1.5,
+      tl.to(".hero-exterior", {
+        scale: isMobile ? 1.3 : 1.5,
         ease: "none",
       }, 0)
 
         .to(".hero-headline", {
-          y: -120,
+          y: -60,
           opacity: 0,
           ease: "none",
         }, 0.05)
@@ -52,14 +55,14 @@ export function HeroCinematicScrollV2({ content: {
         // =========================================================================
 
         .to(".door-left", {
-          xPercent: -120,
+          xPercent: -101,
           ease: "power2.inOut",
-        }, 0.18)
+        }, 0.15)
 
         .to(".door-right", {
-          xPercent: 120,
+          xPercent: 101,
           ease: "power2.inOut",
-        }, 0.18)
+        }, 0.15)
 
         // =========================================================================
         // ✨ 3. Light bloom moment
@@ -67,63 +70,55 @@ export function HeroCinematicScrollV2({ content: {
 
         .to(".door-glow", {
           opacity: 1,
-          scale: 1.3,
+          scale: 1.2,
           ease: "power2.out",
-        }, 0.25)
+        }, 0.2)
 
         // =========================================================================
-        // 🌫️ 4. Exterior exit (camera transition)
-        // =========================================================================
-
-
-
-        // =========================================================================
-        // 🟦 5. Interior entrance (FOCUS PULL)
+        // 🟦 4. Interior entrance (FOCUS PULL)
         // =========================================================================
 
         .fromTo(
           ".hero-interior",
           {
             opacity: 0,
-            scale: 1.12,
-            y: 60,
-            filter: "blur(14px)",
+            scale: 1.08,
+            y: 30,
           },
           {
             opacity: 1,
             scale: 1,
             y: 0,
-            filter: "blur(0px)",
             ease: "power2.out",
           },
-          0.5
+          0.45
         )
 
         // =========================================================================
-        // 🎥 6. Interior parallax (subtle camera drift)
+        // 🎥 5. Interior parallax (subtle camera drift)
         // =========================================================================
 
         .to(".hero-interior", {
-          scale: 1.06,
+          scale: 1.03,
           ease: "none",
-        }, 0.65)
+        }, 0.6)
 
         // =========================================================================
-        // 📝 7. Inside copy reveal
+        // 📝 6. Inside copy reveal
         // =========================================================================
 
         .fromTo(
           ".hero-inside-copy",
           {
             opacity: 0,
-            y: 40,
+            y: 20,
           },
           {
             opacity: 1,
             y: 0,
             ease: "power2.out",
           },
-          0.7
+          0.65
         );
 
     }, wrap);
@@ -138,8 +133,15 @@ export function HeroCinematicScrollV2({ content: {
   return (
     <section id="heroCinematicScroll" ref={wrap} className="relative h-screen w-full overflow-hidden bg-ink text-bone">
       {/* Interior layer */}
-      <div className="absolute inset-0 will-change-transform">
-        <Image src={fallbackImage.src} alt={fallbackImage.alt} className="hero-interior absolute inset-0 h-full w-full object-cover opacity-0" width={fallbackImage?.width ?? 1920} height={fallbackImage?.height ?? 1080} loading="eager" />
+      <div className="absolute inset-0 will-change-transform transform-gpu">
+        <Image 
+          src={fallbackImage.src} 
+          alt={fallbackImage.alt} 
+          className="hero-interior absolute inset-0 h-full w-full object-cover opacity-0 will-change-transform" 
+          width={fallbackImage?.width ?? 1920} 
+          height={fallbackImage?.height ?? 1080} 
+          loading="eager" 
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-ink/20 via-transparent to-ink/60" />
       </div>
 
@@ -148,7 +150,7 @@ export function HeroCinematicScrollV2({ content: {
         <div className="absolute inset-0 overflow-hidden">
           {/* LEFT HALF */}
           <div
-            className="door-left absolute inset-0 will-change-transform"
+            className="door-left absolute inset-0 will-change-transform transform-gpu"
             style={{
               clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)",
             }}
@@ -157,7 +159,7 @@ export function HeroCinematicScrollV2({ content: {
               <Image
                 src={scrollImage.src}
                 alt={scrollImage.alt}
-                className="hero-exterior absolute inset-0 h-full w-full object-cover"
+                className="hero-exterior absolute inset-0 h-full w-full object-cover will-change-transform"
                 width={scrollImage.width ?? 1920}
                 height={scrollImage.height ?? 1080}
                 fetchPriority="high"
@@ -168,7 +170,7 @@ export function HeroCinematicScrollV2({ content: {
 
           {/* RIGHT HALF */}
           <div
-            className="door-right absolute inset-0 will-change-transform"
+            className="door-right absolute inset-0 will-change-transform transform-gpu"
             style={{
               clipPath: "polygon(50% 0, 100% 0, 100% 100%, 50% 100%)",
             }}
@@ -177,7 +179,7 @@ export function HeroCinematicScrollV2({ content: {
               <Image
                 src={scrollImage.src}
                 alt={scrollImage.alt}
-                className="hero-exterior absolute inset-0 h-full w-full object-cover"
+                className="hero-exterior absolute inset-0 h-full w-full object-cover will-change-transform"
                 width={scrollImage.width ?? 1920}
                 height={scrollImage.height ?? 1080}
                 loading="eager"
@@ -186,7 +188,7 @@ export function HeroCinematicScrollV2({ content: {
           </div>
 
           <div
-            className="door-glow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[60vh] w-[60vh] rounded-full opacity-0 blur-3xl"
+            className="door-glow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[60vh] w-[60vh] rounded-full opacity-0 blur-2xl ointer-events-none"
             style={{
               background:
                 "radial-gradient(circle, oklch(0.85 0.13 75 / 0.9), oklch(0.7 0.14 70 / 0.4) 40%, transparent 70%)",
@@ -197,8 +199,8 @@ export function HeroCinematicScrollV2({ content: {
       </div>
 
       {/* Particles */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        {Array.from({ length: 18 }).map((_, i) => (
+      <div className="pointer-events-none absolute inset-0 overflow-hidden sm:block">
+        {Array.from({ length: 12 }).map((_, i) => (
           <span key={i} className="particle absolute block h-[3px] w-[3px] rounded-full bg-champagne/70 blur-[1px]" style={{ left: `${(i * 53) % 100}%`, bottom: `-${(i * 7) % 30}vh`, animationDuration: `${14 + (i % 7) * 3}s`, animationDelay: `${(i % 9) * 1.4}s` }} />
         ))}
       </div>
