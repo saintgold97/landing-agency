@@ -1,13 +1,11 @@
+// src/components/sections/Experience.tsx
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { SectionContentMap } from "@/types/sections";
-
-gsap.registerPlugin(ScrollTrigger);
 
 interface ExperienceProps {
   content: SectionContentMap["experiences"];
@@ -19,36 +17,45 @@ export function Experience({
   const wrap = useRef<HTMLDivElement>(null);
   const bgRef = useRef<HTMLDivElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
-  const [isDragging] = useState(false);
 
   // ============================================================================
-  // 🎬 GSAP: Parallax + Counters (inalterato)
+  // 🎬 GSAP: Parallax + Counters (Blindato per re-entry)
   // ============================================================================
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Parallax background
+      const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+      // Parallax background solido
       if (bgRef.current) {
-        gsap.to(bgRef.current, {
-          yPercent: 10,
-          ease: "none",
-          scrollTrigger: {
-            trigger: wrap.current,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
+        gsap.fromTo(bgRef.current,
+          { yPercent: isMobile ? -5 : -10 },
+          {
+            yPercent: isMobile ? 5 : 10,
+            ease: "none",
+            scrollTrigger: {
+              trigger: wrap.current,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: true,
+            },
+          }
+        );
       }
 
-      // Counter animation
+      // Counter animation attivata ONCE per evitare glitch visivi
       gsap.utils.toArray<HTMLElement>(".stat-num").forEach((el) => {
         const target = Number(el.dataset.target);
         const obj = { v: 0 };
         gsap.to(obj, {
           v: target,
-          duration: 2,
-          ease: "power2.out",
-          scrollTrigger: { trigger: el, start: "top 80%", toggleActions: "play none none none" },
+          duration: 1.6,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: el,
+            start: "top 90%",
+            toggleActions: "play none none none",
+            once: true // 🛑 Impedisce il loop al rientrare della card
+          },
           onUpdate: () => (el.textContent = Math.round(obj.v).toString()),
         });
       });
@@ -58,14 +65,12 @@ export function Experience({
   }, []);
 
   // ============================================================================
-  // 🎠 Carousel: Scroll to Page con Framer Motion
+  // 🎠 Carousel Logic (Frecce + Swipe Nativo, No Wheel Override distruttivo)
   // ============================================================================
   const scrollToPage = useCallback((direction: "next" | "prev") => {
     if (!carouselRef.current) return;
-
     const container = carouselRef.current;
-
-    const amount = container.clientWidth * 0.9;
+    const amount = container.clientWidth * 0.85;
 
     container.scrollBy({
       left: direction === "next" ? amount : -amount,
@@ -73,18 +78,15 @@ export function Experience({
     });
   }, []);
 
-  // ============================================================================
-  // ⌨️ Keyboard navigation
-  // ============================================================================
+  // Keyboard navigation
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (layout !== "carousel") return;
+    if (layout !== "carousel") return;
 
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight") {
         e.preventDefault();
         scrollToPage("next");
       }
-
       if (e.key === "ArrowLeft") {
         e.preventDefault();
         scrollToPage("prev");
@@ -92,91 +94,44 @@ export function Experience({
     };
 
     window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [layout, scrollToPage]);
 
-  // ============================================================================
-  // 🔄 Sync indicatori con drag (opzionale: highlight mentre trascini)
-  // ============================================================================
-  useEffect(() => {
-    if (layout !== "carousel" || !carouselRef.current || !items) return;
-
-    const container = carouselRef.current;
-    const updateIndexOnScroll = () => {
-      if (isDragging) return;
-    };
-
-    container.addEventListener("scroll", updateIndexOnScroll, { passive: true });
-    return () => container.removeEventListener("scroll", updateIndexOnScroll);
-  }, [isDragging, items, layout]);
-
-  useEffect(() => {
-    const container = carouselRef.current;
-    if (!container || layout !== "carousel") return;
-
-    const handleWheel = (e: WheelEvent) => {
-      // se lo scroll verticale è maggiore
-      // trasformalo in orizzontale
-      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-        e.preventDefault();
-
-        container.scrollBy({
-          left: e.deltaY,
-          behavior: "smooth",
-        });
-      }
-    };
-
-    container.addEventListener("wheel", handleWheel, {
-      passive: false,
-    });
-
-    return () => {
-      container.removeEventListener("wheel", handleWheel);
-    };
-  }, [layout]);
-
-  // ============================================================================
-  // 🎨 Render
-  // ============================================================================
   return (
     <section
       id="experiences"
       ref={wrap}
-      className="relative h-[110vh] overflow-hidden text-bone"
+      // 🧱 Cambiato h-[110vh] in altezza dinamica (py) per preservare layout e responsive su schermi bassi
+      className="relative w-full overflow-hidden text-bone bg-ink py-24 md:py-36"
     >
-      {/* 🖼️ Parallax Background */}
-      <div className="exp-bg absolute inset-x-0 top-[-50%] h-[150%] w-full">
+      {/* 🖼️ Parallax Background Wrapper */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {backgroundImage ? (
-          <div ref={bgRef} className="absolute inset-0 h-[130%] w-full">
+          <div ref={bgRef} className="absolute inset-x-0 top-[-20%] h-[140%] w-full transform-gpu will-change-transform">
             <Image
               src={backgroundImage.src}
-              alt={backgroundImage.alt || ""}
+              alt={backgroundImage.alt || "Background Experience"}
               fill
               priority
-              className="object-cover"
-              unoptimized
+              className="object-cover select-none"
+              sizes="100vw"
             />
           </div>
         ) : (
-          <div ref={bgRef} className="absolute inset-0 h-[130%] w-full bg-ink/80" />
+          <div className="absolute inset-0 bg-ink/90" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-ink/40 via-ink/20 to-ink/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink via-ink/30 to-ink z-1" />
       </div>
 
-      <div className="relative h-full mx-auto max-w-[1400px] px-6 md:px-12 flex flex-col justify-center">
-
+      <div className="relative z-10 mx-auto max-w-[1400px] px-6 md:px-12 flex flex-col h-full justify-center">
         {/* Header */}
         {subtitle && (
-          <p className="tracking-luxury text-[11px] uppercase text-champagne mb-8">
+          <p className="tracking-luxury text-[10px] md:text-[11px] uppercase text-champagne mb-4 select-none">
             — {subtitle} —
           </p>
         )}
         {title && (
-          <h2 className="font-serif text-[clamp(2.5rem,7vw,7rem)] leading-[0.95] max-w-4xl text-balance">
+          <h2 className="font-serif text-[clamp(2.3rem,6vw,5.5rem)] leading-[0.95] max-w-4xl text-balance tracking-tight">
             {title}
           </h2>
         )}
@@ -185,122 +140,102 @@ export function Experience({
         {items && (
           <>
             {layout === "carousel" ? (
-              // Carousel con Framer Motion drag + snap
-              <motion.div
-                ref={carouselRef}
-                className="carousel-track mt-16 flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth scroll-px-6 pb-8 -mx-6 px-6 md:-mx-12 md:px-12 scrollbar-hide [scrollbar-width:none]"
-                style={{
-                  maskImage:
-                    "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
-                }}
-              >
-                {items.map((item, i) => (
-                  <motion.div
-                    key={item.id || i}
-                    className="min-w-[80vw] min-h-[40vh] md:min-w-[400px] flex justify-end flex-col snap-center relative overflow-hidden p-6 md:p-8 rounded-sm text-left border border-bone/10 bg-card/5 shrink-0"
-                    // Entrance animation staggered
-                    initial={{ opacity: 0, y: 30, scale: 0.98 }}
-                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                    viewport={{ once: true, margin: "-50px" }}
-                    transition={{
-                      duration: 0.6,
-                      ease: [0.22, 1, 0.36, 1],
-                      delay: i * 0.1
-                    }}
-                    // Hover effect
-                    whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                  >
-                    {/* Item image */}
-                    {item.image?.src && (
-                      <Image
-                        src={item.image.src}
-                        alt={item.image.alt}
-                        width={400}
-                        height={300}
-                        className="absolute inset-0 h-full w-full object-cover opacity-80 transition-opacity duration-500 group-hover:opacity-30"
-                        loading="eager"
-                      />
-                    )}
-
-                    {/* Overlay gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/30 to-transparent" />
-
-                    <div
-                      className="relative z-10 p-6 md:p-8 rounded-sm"
-                      style={{
-                        background: "radial-gradient(ellipse at center, rgba(45,36,24,0.8) 0%, rgba(26,26,26,0.95) 70%)"
-                      }}
+              <div className="relative w-full">
+                {/* Track con Snap Nativo ed efficiente (Ripulito dai duplicati) */}
+                <div
+                  ref={carouselRef}
+                  className="mt-12 flex gap-6 overflow-x-scroll snap-x snap-mandatory touch-pan-x select-none scroll-smooth pb-6 -mx-6 px-6 md:-mx-12 md:px-12 scrollbar-none"
+                  style={{
+                    WebkitOverflowScrolling: "touch", // Inerzia nativa per iOS
+                    maskImage: "linear-gradient(to right, transparent, black 6%, black 94%, transparent)",
+                    WebkitMaskImage: "linear-gradient(to right, transparent, black 6%, black 94%, transparent)",
+                  }}
+                >
+                  {items.map((item, i) => (
+                    <motion.div
+                      key={item.id || i}
+                      // 💡 Fix: bg-[rgba(...)] racchiuso correttamente tra parentesi quadre Tailwind native
+                      className="min-w-[85vw] min-h-[38vh] sm:min-w-[50vw] md:min-w-[400px] flex justify-end flex-col snap-center relative overflow-hidden p-6 md:p-8 rounded-sm text-left 
+                      border border-bone/10 bg-[rgba(255,255,255,0.02)] backdrop-blur-sm shrink-0 transform-gpu"
+                      initial={{ opacity: 0, y: 40 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: "-20px" }}
+                      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: i * 0.08 }}
+                      whileHover={{ y: -4, borderColor: "rgba(196,167,125,0.3)", transition: { duration: 0.2 } }}
                     >
-                      {/* Animated counter */}
-                      <div className="font-serif text-5xl md:text-6xl text-gradient-gold leading-none">
-                        <span className="stat-num" data-target={i + 1}>
-                          {i + 1}
-                        </span>
-                      </div>
-
-                      {/* Title */}
-                      <div className="mt-4 tracking-editorial text-[10px] uppercase text-bone/90">
-                        {item.title}
-                      </div>
-
-                      {/* Description */}
-                      {showDescriptions && item.description && (
-                        <p className="mt-2 text-sm text-bone/70 line-clamp-3">
-                          {item.description}
-                        </p>
+                      {item.image?.src && (
+                        <Image
+                          src={item.image.src}
+                          alt={item.image.alt ?? item.title}
+                          fill
+                          className="absolute inset-0 h-full w-full object-cover opacity-40 transition-opacity duration-500 pointer-events-none select-none"
+                          sizes="(max-width: 768px) 85vw, 400px"
+                        />
                       )}
 
-                      {/* Link */}
-                      {item.link && (
-                        <a
-                          href={item.link}
-                          className="mt-4 inline-flex items-center gap-2 text-[10px] uppercase tracking-editorial text-champagne hover:text-bone transition-colors group"
-                        >
-                          Scopri
-                          <motion.span
-                            className="inline-block"
-                            animate={{ x: [0, 4, 0] }}
-                            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                      <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent z-1 pointer-events-none" />
+
+                      <div className="relative z-10 w-full mt-auto pointer-events-none">
+                        <div className="font-serif text-5xl md:text-6xl text-gradient-gold leading-none font-light select-none">
+                          <span className="stat-num" data-target={i + 1}>0</span>
+                        </div>
+
+                        <div className="mt-4 tracking-editorial text-[10px] uppercase text-bone/90 tracking-widest font-medium">
+                          {item.title}
+                        </div>
+
+                        {showDescriptions && item.description && (
+                          <p className="mt-2 text-xs md:text-sm text-bone/60 line-clamp-3 leading-relaxed">
+                            {item.description}
+                          </p>
+                        )}
+
+                        {item.link && (
+                          <a
+                            href={item.link}
+                            // 💡 Fix: classe inline ricomposta correttamente su un'unica linea
+                            className="mt-4 inline-flex items-center gap-2 text-[10px] uppercase tracking-editorial text-champagne hover:text-bone transition-colors group pointer-events- 
+                            auto"
                           >
-                            →
-                          </motion.span>
-                        </a>
-                      )}
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
+                            Scopri <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
+                          </a>
+                        )}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
             ) : (
-              // Grid layout (inalterato)
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl">
+              /* Grid layout */
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-12 w-full">
                 {items.map((item, i) => (
                   <motion.div
                     key={item.id || i}
-                    className="group relative overflow-hidden p-6 md:p-8 rounded-sm text-left transition-all duration-500 bg-card/10 hover:bg-card/20"
-                    initial={{ opacity: 0, y: 20 }}
+                    className="group relative overflow-hidden p-6 md:p-8 rounded-sm text-left bg-white/[0.02] border border-bone/10 transition-all duration-300 hover:border-champagne/30 
+                    transform-gpu"
+                    initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: i * 0.1, duration: 0.5 }}
+                    transition={{ delay: i * 0.08, duration: 0.5 }}
                     whileHover={{ y: -4 }}
                   >
                     {item.image?.src && (
                       <Image
                         src={item.image.src}
-                        alt={item.image.alt}
-                        width={400}
-                        height={300}
-                        className="absolute inset-0 h-full w-full object-cover opacity-80 transition-all duration-500 group-hover:opacity-30 group-hover:scale-105"
-                        loading="eager"
+                        alt={item.image.alt ?? item.title}
+                        fill
+                        className="absolute inset-0 h-full w-full object-cover opacity-40 transition-all duration-500 group-hover:scale-103 pointer-events-none select-none"
+                        sizes="(max-width: 768px) 100vw, 25vw"
                       />
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/40 to-transparent" />
-                    <div className="relative z-10">
-                      <div className="font-serif text-5xl md:text-6xl text-gradient-gold leading-none">
-                        <span className="stat-num" data-target={i + 1}>{i + 1}</span>
+                    <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent z-1 pointer-events-none" />
+                    <div className="relative z-10 w-full h-full flex flex-col justify-end">
+                      <div className="font-serif text-5xl md:text-6xl text-gradient-gold leading-none font-light">
+                        <span className="stat-num" data-target={i + 1}>0</span>
                       </div>
-                      <div className="mt-4 tracking-editorial text-[10px] uppercase text-bone/90">{item.title}</div>
+                      <div className="mt-4 tracking-editorial text-[10px] uppercase text-bone/90 tracking-widest font-medium">{item.title}</div>
                       {showDescriptions && item.description && (
-                        <p className="mt-2 text-sm text-bone/70 line-clamp-3">{item.description}</p>
+                        <p className="mt-2 text-xs text-bone/60 line-clamp-3 leading-relaxed">{item.description}</p>
                       )}
                       {item.link && (
                         <a href={item.link} className="mt-4 inline-flex items-center gap-2 text-[10px] uppercase tracking-editorial text-champagne hover:text-bone transition-colors">
@@ -313,12 +248,13 @@ export function Experience({
               </div>
             )}
 
-            {/* 🎯 Carousel Indicators - Animati con Framer Motion */}
+            {/* 🎯 Carousel Navigation Buttons */}
             {layout === "carousel" && items.length > 1 && (
-              <div className="mt-10 flex items-center justify-center gap-4">
+              <div className="mt-8 flex items-center justify-start gap-4 select-none">
                 <button
                   onClick={() => scrollToPage("prev")}
-                  className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-background/20 backdrop-blur transition-all hover:border-primary hover:bg-background/40 cursor-pointer"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-bone/10 bg-white/5 backdrop-blur-sm transition-all hover:border-champagne/40 hover:bg-
+                  white/10 active:scale-95 cursor-pointer text-sm"
                   aria-label="Previous experiences"
                 >
                   ←
@@ -326,7 +262,8 @@ export function Experience({
 
                 <button
                   onClick={() => scrollToPage("next")}
-                  className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-background/20 backdrop-blur transition-all hover:border-primary hover:bg-background/40 cursor-pointer"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-bone/10 bg-white/5 backdrop-blur-sm transition-all hover:border-champagne/40 hover:bg-
+                  white/10 active:scale-95 cursor-pointer text-sm"
                   aria-label="Next experiences"
                 >
                   →
@@ -339,14 +276,14 @@ export function Experience({
         {/* Cit quote */}
         {cit && (
           <motion.blockquote
-            className="mt-10 max-w-2xl font-serif italic text-2xl md:text-3xl text-bone/90 text-balance"
+            className="mt-14 max-w-3xl font-serif italic text-xl md:text-2xl text-bone/80 text-balance border-l border-champagne/30 pl-6 leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.3, duration: 0.6 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
           >
             “{cit.text}”
-            <footer className="mt-4 not-italic tracking-editorial text-[10px] uppercase text-champagne">
+            <footer className="mt-3 not-italic tracking-editorial text-[9px] uppercase text-champagne tracking-widest font-medium">
               — {cit.author}
             </footer>
           </motion.blockquote>

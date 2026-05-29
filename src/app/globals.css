@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
-/* =========================================
-   🎨 CSS Variables - Mappatura ThemeConfig
-   ========================================= */
+/* ============================================================================
+   🎨 CSS Variables - Mappatura ThemeConfig + Canali RGB per Opacità Dinamiche
+   ============================================================================ */
 :root {
-  /* Colors - valori di default (sovrascrivibili via JS/props) */
+  /* Canali Esadecimali / Standard */
   --color-primary: #0c3921;
   --color-primary-foreground: #ffffff;
   --color-accent: #c4a77d;
@@ -14,6 +14,12 @@
   --color-muted: #f0ede8;
   --color-muted-foreground: #6b6b6b;
   --color-border: #e5e7eb;
+
+  /* 🧱 FONDAMENTALI: Canali RAW RGB (Permettono trasparenze dinamiche sicure al 100% per le animazioni) */
+  --color-background-rgb: 237, 227, 214; /* Equivalente di #ede3d6 */
+  --color-foreground-rgb: 26, 26, 26; /* Equivalente di #1a1a1a */
+  --color-border-rgb: 229, 231, 235; /* Equivalente di #e5e7eb */
+  --color-accent-rgb: 196, 167, 125; /* Equivalente di #c4a77d */
 
   /* Fonts */
   --site-font-heading: "Playfair Display", serif;
@@ -30,9 +36,9 @@
   --padding-loose: 3rem;
 }
 
-/* =========================================
-   🎨 Tailwind @theme mapping
-   ========================================= */
+/* ============================================================================
+   🎨 Tailwind @theme mapping (v4)
+   ============================================================================ */
 @theme {
   /* Colors */
   --color-primary: var(--color-primary);
@@ -45,12 +51,12 @@
   --color-muted-foreground: var(--color-muted-foreground);
   --color-border: var(--color-border);
 
-  /* Semantic aliases per coerenza con componenti esistenti */
-  --color-ink: var(--color-foreground); /* #1A1A1A */
-  --color-bone: var(--color-background); /* #ede3d6 */
-  --color-champagne: var(--color-accent); /* #C4A77D */
-  --color-gold: var(--color-accent); /* alias */
-  --color-card: var(--color-muted); /* #F0EDE8 */
+  /* Semantic aliases */
+  --color-ink: var(--color-foreground);
+  --color-bone: var(--color-background);
+  --color-champagne: var(--color-accent);
+  --color-gold: var(--color-accent);
+  --color-card: var(--color-muted);
 
   /* Fonts */
   --font-heading: var(--site-font-heading);
@@ -64,9 +70,9 @@
   --tracking-editorial: 0.15em;
 }
 
-/* =========================================
+/* ============================================================================
    🌍 Base styles
-   ========================================= */
+   ============================================================================ */
 body {
   background: var(--color-background);
   color: var(--color-foreground);
@@ -75,9 +81,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* =========================================
+/* ============================================================================
    ✨ Utility classes semantiche
-   ========================================= */
+   ============================================================================ */
 .font-serif {
   font-family: var(--font-heading);
 }
@@ -117,17 +123,21 @@ body {
   );
 }
 
-/* Glass effect per overlay */
+/* 🌌 Glass effect per overlay */
 .glass {
-  background: color-mix(in oklab, var(--color-background) 85%, transparent);
+  background: rgba(var(--color-background-rgb), 0.85);
   backdrop-filter: blur(12px);
-  border: 1px solid color-mix(in oklab, var(--color-border) 40%, transparent);
+  -webkit-backdrop-filter: blur(
+    12px
+  ); /* Cruciale per fluidità su iOS (Safari) */
+  border: 1px solid rgba(var(--color-border-rgb), 0.4);
 }
 
 .glass-dark {
-  background: color-mix(in oklab, var(--color-foreground) 85%, transparent);
+  background: rgba(var(--color-foreground-rgb), 0.85);
   backdrop-filter: blur(12px);
-  border: 1px solid color-mix(in oklab, var(--color-border) 30%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(var(--color-border-rgb), 0.3);
 }
 
 /* Grain texture opzionale */
@@ -136,12 +146,12 @@ body {
   pointer-events: none;
 }
 
-/* Vignette per profondità */
+/* 🎭 Vignette per profondità (Corretto bug strutturale del gradiente) */
 .vignette {
   background: radial-gradient(
     ellipse at center,
-    transparent 0%,
-    color-mix(in oklab, var(--color-background) 0%, #000) 100%
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.65) 100%
   );
   pointer-events: none;
 }
@@ -211,12 +221,13 @@ select {
   border-radius: var(--radius-md);
   padding: 0.75rem 1rem;
   font-family: var(--font-body);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
+
 input:focus,
 textarea:focus,
 select:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px
-    color-mix(in oklab, var(--color-accent) 20%, transparent);
+  box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb), 0.2);
 }

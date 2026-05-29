@@ -1,12 +1,13 @@
-"use client"
+// src/components/sections/Location.tsx
+"use client";
 
-import { useEffect, useRef } from "react"
-import { gsap } from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { SectionContentMap } from "@/types/sections"
-import { MapPin } from "lucide-react"
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SectionContentMap } from "@/types/sections";
+import { MapPin } from "lucide-react";
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger);
 
 interface LocationProps {
     content: SectionContentMap['location']
@@ -21,13 +22,10 @@ export function Location({ content: {
     directionsLink,
     nearbyAttractions
 } }: LocationProps) {
-    const sectionRef = useRef<HTMLElement>(null)
-    const titleRef = useRef<HTMLHeadingElement>(null)
-    const descriptionRef = useRef<HTMLParagraphElement>(null)
-    const mapRef = useRef<HTMLDivElement>(null)
-    const attractionsRef = useRef<HTMLUListElement>(null)
-    const addressRef = useRef<HTMLDivElement>(null)
-    const directionsRef = useRef<HTMLAnchorElement>(null)
+    const sectionRef = useRef<HTMLElement>(null);
+    const mapRef = useRef<HTMLDivElement>(null);
+    const attractionsRef = useRef<HTMLUListElement>(null);
+    const addressWrapperRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const ctx = gsap.context(() => {
@@ -37,161 +35,131 @@ export function Location({ content: {
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: sectionRef.current,
-                    start: "top 80%", // Inizia quando la sezione è all'80% del viewport
-                    toggleActions: "play none none reverse", // Play on enter, reverse on leave
+                    start: "top 80%",
+                    toggleActions: "play none none reverse",
                 }
-            })
+            });
+
+            // Animazione controllata del blocco testi principale
+            tl.from(".location-header-reveal", {
+                y: 30,
+                opacity: 0,
+                stagger: 0.1,
+                duration: 0.8,
+                ease: "power3.out"
+            });
 
             // 🗺️ Map reveal: scale + fade
             if (mapRef.current) {
                 tl.from(mapRef.current, {
-                    scale: 1.08,
+                    scale: 1.04,
                     opacity: 0,
                     ease: "power2.out",
                     duration: 1.2
-                }, 0.2)
+                }, 0.3);
             }
 
-            // 📋 Attractions list: staggered items
+            // 📍 Address box slide-in
+            if (addressWrapperRef.current) {
+                tl.from(addressWrapperRef.current, {
+                    y: 15,
+                    opacity: 0,
+                    duration: 0.6,
+                    ease: "power2.out"
+                }, 0.5);
+            }
+
+            // 📋 Attractions list: staggered items (Usa la classe univoca .list-item-reveal)
             if (attractionsRef.current) {
-                gsap.from(".attraction-item", {
+                gsap.from(".list-item-reveal", {
                     scrollTrigger: {
                         trigger: attractionsRef.current,
                         start: "top 85%",
-                        toggleActions: "play none none reverse"
+                        toggleActions: "play none none reverse",
+                        once: true
                     },
-                    y: 20,
+                    y: 15,
                     opacity: 0,
-                    stagger: 0.08,
+                    stagger: 0.06,
                     ease: "power2.out",
-                    duration: 0.5
-                })
-            }
-
-            // 📍 Address + directions: subtle slide-in
-            if (addressRef.current) {
-                tl.from(addressRef.current, {
-                    x: -15,
-                    opacity: 0.7,
-                    ease: "power2.out"
-                }, 0.4)
-            }
-            if (directionsRef.current) {
-                tl.from(directionsRef.current, {
-                    x: 15,
-                    opacity: 0.7,
-                    ease: "power2.out"
-                }, 0.45)
+                    duration: 0.6
+                });
             }
 
             // ========================================================================
-            // ✨ Interactive hover effects (GSAP-powered)
+            // ✨ Interactive hover effects (Solo sulle righe delle attrazioni reali)
             // ========================================================================
-
-            // Attractions items: hover highlight
-            gsap.utils.toArray<HTMLElement>(".attraction-item").forEach((item) => {
+            gsap.utils.toArray<HTMLElement>(".interactive-attraction-row").forEach((item) => {
                 const nameEl = item.querySelector<HTMLElement>(".attraction-name");
                 const distanceEl = item.querySelector<HTMLElement>(".attraction-distance");
 
-                if (!nameEl && !distanceEl) return; // Skip se non ci sono elementi
-
                 const handleEnter = () => {
-                    if (nameEl) {
-                        gsap.to(nameEl, { x: 4, duration: 0.3, ease: "power2.out" });
-                    }
-                    if (distanceEl) {
-                        gsap.to(distanceEl, { x: 4, duration: 0.3, ease: "power2.out" });
-                    }
+                    if (nameEl) gsap.to(nameEl, { x: 6, duration: 0.3, ease: "power2.out", color: "var(--color-accent)" });
+                    if (distanceEl) gsap.to(distanceEl, { x: -4, duration: 0.3, ease: "power2.out", color: "var(--color-accent)" });
                 };
 
                 const handleLeave = () => {
-                    if (nameEl) {
-                        gsap.to(nameEl, { x: 0, duration: 0.3, ease: "power2.out" });
-                    }
-                    if (distanceEl) {
-                        gsap.to(distanceEl, { x: 0, duration: 0.3, ease: "power2.out" });
-                    }
+                    if (nameEl) gsap.to(nameEl, { x: 0, duration: 0.3, ease: "power2.out", color: "var(--color-foreground)" });
+                    if (distanceEl) gsap.to(distanceEl, { x: 0, duration: 0.3, ease: "power2.out", color: "rgba(237,227,214,0.6)" });
                 };
 
                 item.addEventListener("mouseenter", handleEnter);
                 item.addEventListener("mouseleave", handleLeave);
             });
 
-            // Directions button: hover scale + glow
-            if (directionsRef.current) {
-                directionsRef.current.addEventListener("mouseenter", () => {
-                    gsap.to(directionsRef.current, {
-                        scale: 1.03,
-                        duration: 0.3,
-                        ease: "power2.out"
-                    })
-                })
-                directionsRef.current.addEventListener("mouseleave", () => {
-                    gsap.to(directionsRef.current, {
-                        scale: 1,
-                        duration: 0.3,
-                        ease: "power2.out"
-                    })
-                })
-            }
+        }, sectionRef);
 
-        }, sectionRef)
-
-        return () => ctx.revert()
-    }, [])
+        return () => ctx.revert();
+    }, []);
 
     return (
         <section
             ref={sectionRef}
             id="location"
-            className="relative bg-ink text-bone py-32 md:py-48 overflow-hidden"
+            className="relative bg-ink text-bone py-24 md:py-36 overflow-hidden w-full"
         >
             <div className="mx-auto max-w-[1400px] px-6 md:px-12">
-                <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-stretch">
+                <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
 
                     {/* 📝 Left column: content */}
-                    <div className="lg:col-span-5 flex flex-col justify-between">
-                        <div className="attraction-item">
+                    <div className="lg:col-span-5 flex flex-col justify-center h-full">
+                        <div className="flex flex-col mb-8">
                             {/* Subtitle */}
-                            <span className="attraction-name tracking-luxury text-[11px] uppercase text-gold mb-8">
-                                — {subtitle}
-                            </span>
+                            {subtitle && (
+                                <span className="location-header-reveal tracking-luxury text-[10px] md:text-[11px] uppercase text-gold mb-4 select-none">
+                                    — {subtitle} —
+                                </span>
+                            )}
 
                             {/* Title */}
-                            <h2
-                                ref={titleRef}
-                                className="attraction-name col-span-12 md:col-span-8 font-serif text-[clamp(2.5rem,6.5vw,6.5rem)] leading-[0.95] text-balance"
-                            >
-                                {title}
-                            </h2>
+                            {title && (
+                                <h2 className="location-header-reveal font-serif text-[clamp(2.5rem,6vw,5rem)] leading-[0.98] text-balance tracking-tight">
+                                    {title}
+                                </h2>
+                            )}
 
                             {/* Description */}
-                            <p
-                                ref={descriptionRef}
-                                className="attraction-name col-span-12 md:col-span-4 text-pretty text-[15px] leading-relaxed text-bone/75 my-10"
-                            >
-                                {description}
-                            </p>
+                            {description && (
+                                <p className="location-header-reveal text-pretty text-[14px] md:text-[15px] leading-relaxed text-bone/70 mt-6 mb-2">
+                                    {description}
+                                </p>
+                            )}
                         </div>
 
                         {/* 📍 Address + Directions */}
-                        {(address || directionsLink) && (
-                            <div className="attraction-item flex flex-wrap items-center gap-4 pt-4 border-t border-charcoal/10">
-                                {address && (
-                                    <div ref={addressRef} className="flex items-start gap-2.5">
-                                        <a
-                                            href={directionsLink}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex bg-primary text-primary-foreground hover:bg-primary/90 transition-colors items-center gap-3 px-7 py-3.5 text-ink tracking-editorial text-[10px] uppercase transition-all duration-500"
-                                        >
-                                            <MapPin className="w-4 h-4 text-bronze mt-0.5 flex-shrink-0" />
-                                            <span className="text-sm text-charcoal/80 leading-relaxed">
-                                                {address}
-                                            </span>
-                                        </a>
-                                    </div>
-                                )}
+                        {address && (
+                            <div ref={addressWrapperRef} className="pt-6 border-t border-bone/10 w-full">
+                                <a
+                                    href={directionsLink ?? "#"}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="group inline-flex items-center gap-3 bg-bone text-ink px-6 py-3.5 tracking-editorial text-[10px] uppercase transition-all duration-300 hover:bg-accent hover:text-ink w-full sm:w-auto justify-center rounded-sm transform-gpu active:scale-98"
+                                >
+                                    <MapPin className="w-4 h-4 text-ink flex-shrink-0 transition-transform group-hover:scale-110" />
+                                    <span className="text-xs font-medium tracking-wider">
+                                        {address}
+                                    </span>
+                                </a>
                             </div>
                         )}
 
@@ -204,12 +172,12 @@ export function Location({ content: {
                                 {nearbyAttractions.map((n) => (
                                     <li
                                         key={n.name}
-                                        className="attraction-item flex items-baseline justify-between border-b border-charcoal/10 pb-3 group cursor-default"
+                                        className="flex items-baseline justify-between border-b border-charcoal/10 pb-3 group cursor-default"
                                     >
-                                        <span className="attraction-name font-serif text-bronze/70 text-lg text-charcoal transition-colors group-hover:text-bronze">
+                                        <span className="font-serif text-bronze/70 text-lg text-charcoal transition-colors group-hover:text-bronze">
                                             {n.name}
                                         </span>
-                                        <span className="attraction-distance text-xs uppercase tracking-[0.25em] text-bronze/70 group-hover:text-bronze transition-colors">
+                                        <span className="text-xs uppercase tracking-[0.25em] text-bronze/70 group-hover:text-bronze transition-colors">
                                             {n.distance}
                                         </span>
                                     </li>
@@ -221,35 +189,35 @@ export function Location({ content: {
                     {/* 🗺️ Right column: map */}
                     <div
                         ref={mapRef}
-                        className="lg:col-span-7 relative h-[500px] lg:h-auto min-h-[500px] overflow-hidden rounded-sm"
+                        // 🧱 Aggiunto pointer-events-none su mobile per evitare che blocchi lo scroll, si attiva il click/drag solo al tocco mirato
+                        className="lg:col-span-7 relative h-[400px] sm:h-[450px] lg:h-[550px] w-full overflow-hidden rounded-sm border border-bone/10 transform-gpu bg-card/5"
                     >
-                        {/* Map iframe */}
+                        {/* Overlay invisibile protettivo che intercetta i tocchi accidentali per non bloccare lo scroll mobile */}
+                        <div className="absolute inset-0 z-10 bg-transparent lg:hidden pointer-events-auto" onClick={(e) => e.currentTarget.style.display = 'none'} />
+
                         {mapEmbed ? (
                             <iframe
-                                title={mapEmbed || "Location"}
-                                className="absolute inset-0 w-full h-full grayscale-[0.3] contrast-[0.92] sepia-[0.12] transition-all duration-700"
+                                title="Location Map Embed"
+                                className="absolute inset-0 w-full h-full grayscale-[0.2] contrast-[0.95] sepia-[0.08] transition-all duration-700"
                                 src={mapEmbed}
                                 loading="lazy"
                                 referrerPolicy="no-referrer-when-downgrade"
                             />
                         ) : (
-                            // Fallback map (OpenStreetMap)
                             <iframe
-                                title="Location"
-                                className="absolute inset-0 w-full h-full grayscale-[0.3] contrast-[0.92] sepia-[0.12]"
+                                title="Fallback Location Map"
+                                className="absolute inset-0 w-full h-full grayscale-[0.2] contrast-[0.95] sepia-[0.08]"
                                 src="https://www.openstreetmap.org/export/embed.html?bbox=11.4%2C42.95%2C11.7%2C43.15&layer=mapnik"
                                 loading="lazy"
                             />
                         )}
 
-                        {/* Overlay tint for brand consistency */}
-                        <div className="absolute inset-0 bg-sand/15 pointer-events-none mix-blend-multiply" />
-
-                        {/* Gradient fade at bottom for depth */}
-                        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-sand/80 to-transparent pointer-events-none" />
+                        {/* Cinematic Ambient Atmosphere (Sostituiti i vecchi gradienti con i colori del brand) */}
+                        <div className="absolute inset-0 bg-ink/5 pointer-events-none mix-blend-multiply" />
+                        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-ink/40 to-transparent pointer-events-none" />
                     </div>
                 </div>
             </div>
         </section>
-    )
+    );
 }

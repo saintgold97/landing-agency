@@ -191,7 +191,7 @@ export function HeroCinematicScrollV2({ content: {
             className="door-glow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[60vh] w-[60vh] rounded-full opacity-0 blur-2xl ointer-events-none"
             style={{
               background:
-                "radial-gradient(circle, oklch(0.85 0.13 75 / 0.9), oklch(0.7 0.14 70 / 0.4) 40%, transparent 70%)",
+                "radial-gradient(circle, rgba(244, 207, 147, 0.9), rgba(206, 159, 99, 0.4) 40%, transparent 70%)",
             }}
           />
         </div>
