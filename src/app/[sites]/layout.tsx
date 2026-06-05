@@ -5,6 +5,7 @@ import "@/app/globals.css"
 
 import { getSiteData } from "@/lib/data/loader"
 import { SmoothScroll } from "@/components/ui/SmoothScroll"
+import hexToRgb from "@/lib/utils/hexToRgb"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -56,6 +57,11 @@ export default async function SiteLayout({
 
     "--color-border":
       colors?.border ?? "#E5E7EB",
+
+    "--color-background-rgb": hexToRgb(colors?.background ?? "#ede3d6"),
+    "--color-foreground-rgb": hexToRgb(colors?.foreground ?? "#1a1a1a"),
+    "--color-border-rgb": hexToRgb(colors?.border ?? "#e5e7eb"),
+    "--color-accent-rgb": hexToRgb(colors?.accent ?? colors?.primary ?? "#c4a77d"),
 
     "--font-heading":
       fonts?.heading,
