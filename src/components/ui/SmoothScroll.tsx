@@ -19,47 +19,53 @@ export function SmoothScroll() {
 
     registerCinemaAnimations();
 
-    // 📱 Rileva se il dispositivo è mobile/touch prima di configurare Lenis
     const isMobile = window.matchMedia("(max-width: 768px)").matches || 'ontouchstart' in window;
 
+    // Configurazione ScrollTrigger per Mobile
+    if (isMobile) {
+      ScrollTrigger.config({ ignoreMobileResize: true });
+      ScrollTrigger.normalizeScroll(true);
+    }
+
+    // Inizializzazione Lenis
     const lenis = new Lenis({
-      duration: 1.1, // Leggermente ridotto per massima reattività
+      duration: 1.1,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-      // 🛑 CAMBIAMENTO CRUCIALE: Rimosso syncTouch. 
-      // Se è mobile disattiviamo lo smooth interamente lasciando lo scroll nativo fluido a 120Hz di iOS/Android.
+      smoothWheel: !isMobile, // Disattiva lo smooth wheel se sei su mobile
       autoRaf: false,
     });
 
     lenisRef.current = lenis;
 
+    // Collega Lenis a ScrollTrigger
     lenis.on("scroll", ScrollTrigger.update);
 
+    // Ticker di GSAP
     const raf = (time: number) => {
       lenis.raf(time * 1000);
     };
     gsap.ticker.add(raf);
     gsap.ticker.lagSmoothing(0);
 
-    // 🚀 Normalizza il comportamento di ScrollTrigger sui browser mobile (evita salti della barra indirizzi)
-    if (isMobile) {
-      console.log("sono qui in mobile")
-      ScrollTrigger.config({ ignoreMobileResize: true });
-      ScrollTrigger.normalizeScroll(true); // Forza la sincronizzazione corretta senza lag software
-    }
-
     return () => {
+      lenis.off("scroll", ScrollTrigger.update); // 🧼 Pulizia evento
       gsap.ticker.remove(raf);
       lenis.destroy();
+      isInitialized.current = false;
     };
   }, []);
 
+  // Gestione del cambio pagina (Reset Scroll + Refresh)
   useEffect(() => {
-    if (!isInitialized.current) return;
+    if (!lenisRef.current) return;
 
+    // 1. Resetta istantaneamente lo scroll in cima alla nuova pagina
+    lenisRef.current.scrollTo(0, { immediate: true });
+
+    // 2. Attendi il rendering dei componenti/immagini prima del refresh
     const timer = setTimeout(() => {
       ScrollTrigger.refresh(true);
-    }, 100); // Portato a 100ms per dare tempo alle immagini lazy di calcolare le altezze su mobile
+    }, 150); // Un pelino più alto per sicurezza sui dispositivi lenti
 
     return () => clearTimeout(timer);
   }, [pathname]);

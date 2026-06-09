@@ -1,4 +1,4 @@
-// src/app/[site]/layout.tsx
+// src/app/[sites]/layout.tsx
 
 import { Geist, Geist_Mono } from "next/font/google"
 import "@/app/globals.css"
@@ -79,7 +79,7 @@ export default async function SiteLayout({
 
   return (
     <main
-      className={`bg-background text-foreground font-body min-h-screen overflow-x-hidden ${fontClass} ${geistMono.variable}`}
+      className={`bg-background text-foreground font-body ${fontClass} ${geistMono.variable}`}
       style={cssVariables}
     >
       <SmoothScroll />

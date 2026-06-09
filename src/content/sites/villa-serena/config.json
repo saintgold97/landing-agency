@@ -80,12 +80,12 @@
                         "href": "#rooms"
                     },
                     {
-                        "label": "Servizi",
-                        "href": "#services"
-                    },
-                    {
                         "label": "Esperienze",
                         "href": "#experiences"
+                    },
+                    {
+                        "label": "Servizi",
+                        "href": "#services"
                     },
                     {
                         "label": "Galleria",
@@ -95,12 +95,7 @@
                         "label": "Contatti",
                         "href": "#contact"
                     }
-                ],
-                "cta": {
-                    "text": "Prenota Ora",
-                    "href": "#cta",
-                    "variant": "primary"
-                }
+                ]
             }
         },
         {
