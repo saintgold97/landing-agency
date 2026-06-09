@@ -73,6 +73,10 @@
 /* ============================================================================
    🌍 Base styles
    ============================================================================ */
+html {
+  scroll-behavior: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
 
 html,
 body {
@@ -139,6 +143,8 @@ body {
     12px
   ); /* Cruciale per fluidità su iOS (Safari) */
   border: 1px solid rgba(var(--color-border-rgb), 0.4);
+  will-change: backdrop-filter, transform;
+  transform: translate3d(0, 0, 0);
 }
 
 .glass-dark {
@@ -146,6 +152,8 @@ body {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(var(--color-border-rgb), 0.3);
+  will-change: backdrop-filter, transform;
+  transform: translate3d(0, 0, 0);
 }
 
 /* Grain texture opzionale */

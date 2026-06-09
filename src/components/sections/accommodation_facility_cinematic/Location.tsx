@@ -33,8 +33,8 @@ export function Location({ content: {
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: sectionRef.current,
-                    start: "top 80%",
-                    toggleActions: "play none none reverse",
+                    start: "top 85%",
+                    toggleActions: "play none none none",
                 }
             });
 
@@ -69,8 +69,8 @@ export function Location({ content: {
                 gsap.from(".list-item-reveal", {
                     scrollTrigger: {
                         trigger: attractionsRef.current,
-                        start: "top 85%",
-                        toggleActions: "play none none reverse",
+                        start: "top 90%",
+                        toggleActions: "play none none none",
                         once: true
                     },
                     y: 15,

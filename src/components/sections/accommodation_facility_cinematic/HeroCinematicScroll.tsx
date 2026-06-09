@@ -29,7 +29,7 @@ export function HeroCinematicScrollV2({ content: {
           trigger: wrap.current,
           start: "top top",
           end: "+=200%",
-          scrub: isMobile ? 0.1 : 0.8,
+          scrub: isMobile ? 0.4 : 0.8,
           pin: true,
           anticipatePin: 1,
         },
