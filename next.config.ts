@@ -27,7 +27,8 @@ const nextConfig: NextConfig = {
   experimental: {
     // serverComponentsExternalPackages: [],
   },
-  reactStrictMode: false
+  reactStrictMode: false,
+  //allowedDevOrigins: ['10.216.116.90'],
 };
 
 export default nextConfig;

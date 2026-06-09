@@ -24,7 +24,7 @@ export function SmoothScroll() {
     // Configurazione ScrollTrigger per Mobile
     if (isMobile) {
       ScrollTrigger.config({ ignoreMobileResize: true });
-      //ScrollTrigger.normalizeScroll(true);
+      ScrollTrigger.normalizeScroll(true);
     }
 
     // Inizializzazione Lenis
