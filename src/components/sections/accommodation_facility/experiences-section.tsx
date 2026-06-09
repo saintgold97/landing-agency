@@ -56,11 +56,11 @@ export function ExperiencesSection({ content }: ExperiencesSectionProps) {
           {items.map((experience, index) => (
             <article
               key={experience.id || `exp-${index}`}
-              className={`group cursor-pointer transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+              className={`group mb-8 cursor-pointer transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
               style={{ transitionDelay: `${index * 150}ms` }}
             >
               {/* Image */}
-              <div className="relative aspect-[3/4] mb-6 overflow-hidden bg-secondary rounded-sm">
+              <div className="relative aspect-[3/4] mb-4 overflow-hidden bg-secondary rounded-sm">
                 <Image
                   src={experience.image.src}
                   alt={experience.image.alt}

@@ -73,7 +73,15 @@
 /* ============================================================================
    🌍 Base styles
    ============================================================================ */
+
+html,
 body {
+  min-height: 100%;
+  overscroll-behavior-y: none;
+}
+
+body {
+  overflow-x: clip;
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-body);

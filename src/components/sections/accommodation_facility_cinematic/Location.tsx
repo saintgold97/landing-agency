@@ -29,9 +29,7 @@ export function Location({ content: {
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            // ========================================================================
             // 🎬 Timeline principale: entrance animations
-            // ========================================================================
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: sectionRef.current,
@@ -40,7 +38,6 @@ export function Location({ content: {
                 }
             });
 
-            // Animazione controllata del blocco testi principale
             tl.from(".location-header-reveal", {
                 y: 30,
                 opacity: 0,
@@ -49,7 +46,6 @@ export function Location({ content: {
                 ease: "power3.out"
             });
 
-            // 🗺️ Map reveal: scale + fade
             if (mapRef.current) {
                 tl.from(mapRef.current, {
                     scale: 1.04,
@@ -59,7 +55,6 @@ export function Location({ content: {
                 }, 0.3);
             }
 
-            // 📍 Address box slide-in
             if (addressWrapperRef.current) {
                 tl.from(addressWrapperRef.current, {
                     y: 15,
@@ -69,7 +64,7 @@ export function Location({ content: {
                 }, 0.5);
             }
 
-            // 📋 Attractions list: staggered items (Usa la classe univoca .list-item-reveal)
+            // 📋 Ora che la classe ".list-item-reveal" esiste, l'animazione funzionerà a colpo sicuro!
             if (attractionsRef.current) {
                 gsap.from(".list-item-reveal", {
                     scrollTrigger: {
@@ -85,28 +80,6 @@ export function Location({ content: {
                     duration: 0.6
                 });
             }
-
-            // ========================================================================
-            // ✨ Interactive hover effects (Solo sulle righe delle attrazioni reali)
-            // ========================================================================
-            gsap.utils.toArray<HTMLElement>(".interactive-attraction-row").forEach((item) => {
-                const nameEl = item.querySelector<HTMLElement>(".attraction-name");
-                const distanceEl = item.querySelector<HTMLElement>(".attraction-distance");
-
-                const handleEnter = () => {
-                    if (nameEl) gsap.to(nameEl, { x: 6, duration: 0.3, ease: "power2.out", color: "var(--color-accent)" });
-                    if (distanceEl) gsap.to(distanceEl, { x: -4, duration: 0.3, ease: "power2.out", color: "var(--color-accent)" });
-                };
-
-                const handleLeave = () => {
-                    if (nameEl) gsap.to(nameEl, { x: 0, duration: 0.3, ease: "power2.out", color: "var(--color-foreground)" });
-                    if (distanceEl) gsap.to(distanceEl, { x: 0, duration: 0.3, ease: "power2.out", color: "rgba(237,227,214,0.6)" });
-                };
-
-                item.addEventListener("mouseenter", handleEnter);
-                item.addEventListener("mouseleave", handleLeave);
-            });
-
         }, sectionRef);
 
         return () => ctx.revert();
@@ -167,17 +140,17 @@ export function Location({ content: {
                         {nearbyAttractions && nearbyAttractions.length > 0 && (
                             <ul
                                 ref={attractionsRef}
-                                className="space-y-3 pt-8 mt-4 border-t border-charcoal/10"
+                                className="space-y-3 pt-8 mt-4 border-t border-bone/10"
                             >
                                 {nearbyAttractions.map((n) => (
                                     <li
                                         key={n.name}
-                                        className="flex items-baseline justify-between border-b border-charcoal/10 pb-3 group cursor-default"
+                                        className="list-item-reveal flex items-baseline justify-between border-b border-bone/10 pb-3 group cursor-default"
                                     >
-                                        <span className="font-serif text-bronze/70 text-lg text-charcoal transition-colors group-hover:text-bronze">
+                                        <span className="font-serif text-bone/80 text-lg transition-all duration-300 transform group-hover:translate-x-1.5 group-hover:text-[var(--color-accent)]">
                                             {n.name}
                                         </span>
-                                        <span className="text-xs uppercase tracking-[0.25em] text-bronze/70 group-hover:text-bronze transition-colors">
+                                        <span className="text-xs uppercase tracking-[0.25em] text-bone/50 transition-all duration-300 transform group-hover:-translate-x-1 group-hover:text-[var(--color-accent)]">
                                             {n.distance}
                                         </span>
                                     </li>
